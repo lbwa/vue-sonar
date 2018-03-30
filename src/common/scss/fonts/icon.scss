@@ -1,0 +1,143 @@
+@import "variables";
+
+@font-face {
+  font-family: 'sonar-icon';
+  src:  url('#{$icomoon-font-path}/sonar-icon.eot?bcqpka');
+  src:  url('#{$icomoon-font-path}/sonar-icon.eot?bcqpka#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/sonar-icon.ttf?bcqpka') format('truetype'),
+    url('#{$icomoon-font-path}/sonar-icon.woff?bcqpka') format('woff'),
+    url('#{$icomoon-font-path}/sonar-icon.svg?bcqpka#sonar-icon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'sonar-icon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@function unicode($str) {
+  @return unquote("\"") + $str + unquote("\"");
+}
+
+.icon-ok {
+  &:before {
+    content: unicode($icon-ok); 
+  }
+}
+.icon-no {
+  &:before {
+    content: unicode($icon-no); 
+  }
+}
+.icon-add {
+  &:before {
+    content: unicode($icon-add); 
+  }
+}
+.icon-play-mini {
+  &:before {
+    content: unicode($icon-play-mini); 
+  }
+}
+.icon-playlist {
+  &:before {
+    content: unicode($icon-playlist); 
+  }
+}
+.icon-music {
+  &:before {
+    content: unicode($icon-music); 
+  }
+}
+.icon-Search {
+  &:before {
+    content: unicode($icon-Search); 
+  }
+}
+.icon-clear {
+  &:before {
+    content: unicode($icon-clear); 
+  }
+}
+.icon-close {
+  &:before {
+    content: unicode($icon-close); 
+  }
+}
+.icon-like {
+  &:before {
+    content: unicode($icon-like); 
+  }
+}
+.icon-not-like {
+  &:before {
+    content: unicode($icon-not-like); 
+  }
+}
+.icon-pause {
+  &:before {
+    content: unicode($icon-pause); 
+  }
+}
+.icon-play {
+  &:before {
+    content: unicode($icon-play); 
+  }
+}
+.icon-prev {
+  &:before {
+    content: unicode($icon-prev); 
+  }
+}
+.icon-loop {
+  &:before {
+    content: unicode($icon-loop); 
+  }
+}
+.icon-sequence {
+  &:before {
+    content: unicode($icon-sequence); 
+  }
+}
+.icon-random {
+  &:before {
+    content: unicode($icon-random); 
+  }
+}
+.icon-back {
+  &:before {
+    content: unicode($icon-back); 
+  }
+}
+.icon-mine {
+  &:before {
+    content: unicode($icon-mine); 
+  }
+}
+.icon-next {
+  &:before {
+    content: unicode($icon-next); 
+  }
+}
+.icon-dismiss {
+  &:before {
+    content: unicode($icon-dismiss); 
+  }
+}
+.icon-pause-mini {
+  &:before {
+    content: unicode($icon-pause-mini); 
+  }
+}
+

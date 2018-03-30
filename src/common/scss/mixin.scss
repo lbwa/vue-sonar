@@ -1,0 +1,56 @@
+//文本溢出省略号显示
+@mixin ellipsis($line:1){
+  @if $line==1 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+  }
+  @else {
+      display: -webkit-box;
+      -webkit-line-clamp: $line;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+}
+
+// background image
+@mixin bg-img($url) {
+  background-image: url('#{$url}@2x.png');
+  @media (-webkit-min-device-pixel-radio: 3), (min-device-pixel-radio: 3) {
+    background-image: url('#{$url}@3x.png');
+  }
+}
+
+// 1px border
+@mixin bottom-1px($color) {
+  position: relative;
+  &:after {
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-bottom: 1px solid $color;
+    content: ''
+  }
+};
+
+@mixin border-none () {
+  &:after {
+    display: none;
+  }
+}
+
+// 拓展小图标点击区域
+@mixin extend-click () {
+  position: relative;
+  &::before {
+    content: '.';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+  }
+}
