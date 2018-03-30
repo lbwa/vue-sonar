@@ -1,15 +1,16 @@
 <template>
 <div class="app-tab">
-  <router-link to="/recommend" class="tab-recommend">
+  <!-- tag 属性将使 router-link 渲染为特定的标签，否则渲染为 <a></a> -->
+  <router-link tag="div" to="/recommend" class="tab-recommend">
     <span class="tab-item">推荐</span>
   </router-link>
-  <router-link to="/artist" class="tab-artist">
+  <router-link tag="div" to="/artist" class="tab-artist">
     <span class="tab-item">歌手</span>
   </router-link>
-  <router-link to="/ranking" class="tab-ranking">
+  <router-link tag="div" to="/ranking" class="tab-ranking">
     <span class="tab-item">排行</span>
   </router-link>
-  <router-link to="/search" class="tab-search">
+  <router-link tag="div" to="/search" class="tab-search">
     <span class="tab-item">搜索</span>
   </router-link>
 </div>
