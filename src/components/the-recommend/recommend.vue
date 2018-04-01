@@ -3,7 +3,7 @@
   <div class="recommend-wrapper"><!-- betterScroll -->
     <!-- 轮播图 -->
     <div v-if="recommendList.length" class="slider-wrapper"><!-- 仅做 dots 定位的参照物 -->
-      <BaseSlider :sliderData="recommendList"></BaseSlider>
+      <BaseSlider :sliderData="recommendList" :interval="3000"></BaseSlider>
     </div>
     <!-- 推荐列表 -->
     <div class="recommend-list">
