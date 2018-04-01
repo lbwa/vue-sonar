@@ -9,9 +9,10 @@ html, body {
   color: $color-text;
 }
 
-ul, li {
+ul, li, h2, p {
   margin: 0;
   padding: 0;
+  font-weight: normal;
 }
 
 li {

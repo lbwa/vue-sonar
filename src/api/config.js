@@ -13,3 +13,5 @@ export const options = {
 export const ERR_OK = 0
 
 export const RECOMMEND_URL = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
+
+export const PLAYLIST_URL = '/api/getPlayList'

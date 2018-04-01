@@ -12,7 +12,7 @@
         v-for="(item, index) of sliderList"
         :key="index"
       >
-        <a :href="item.linkUrl" @click.prevent>
+        <a :href="item.linkUrl">
           <img :src="item.picUrl" alt="slider-pic">
         </a>
       </li>
@@ -21,7 +21,7 @@
       <li
         v-for="(item, index) of sliderData"
         :key="index"
-        :class="['slider-dot', {'active': (currentIndex === index + 1) || (currentIndex === sliderLength - 1 && index === 0) || (currentIndex === 0 && index === sliderLength - 3)}]"
+        :class="['slider-dot', {'active': (currentIndex === index + 1) || (currentIndex === sliderListLength - 1 && index === 0) || (currentIndex === 0 && index === sliderListLength - 3)}]"
       ></li>
     </ul>
   </div>
@@ -55,7 +55,7 @@ export default {
   computed: {
     sliderTransform () {
       return {
-        transform: `translateX(${-100 * this.currentIndex}vw)`,
+        transform: `translateX(${-100 * this.currentIndex}%)`,
         transition: this.isResetIndex ? '' : `transform ${this.transformInterval}ms`
       }
     },
@@ -64,15 +64,14 @@ export default {
       // 数组拷贝，防止篡改 props
       return [other[other.length - 1]].concat(this.sliderData, [firstItem])
     },
-    sliderLength () {
+    sliderListLength () {
       return this.sliderList.length
     }
   },
 
   methods: {
     startTouch (evt) {
-      if (this.currentIndex === -1 || this.currentIndex === this.sliderLength) {
-        console.log('return')
+      if (this.currentIndex === -1 || this.currentIndex === this.sliderListLength) {
         return // 触摸时为页首或页末时，返回
       }
       if (evt.target !== evt.currentTarget) {
@@ -100,7 +99,7 @@ export default {
       }
     },
     endTouch (evt) {
-      if (evt.target !== evt.currentTarget && this.movingLocation && this.currentIndex < this.sliderLength - 1) {
+      if (evt.target !== evt.currentTarget && this.movingLocation && this.currentIndex < this.sliderListLength - 1) {
         const sliderLength = this.movingLocation - this.startLocation
         if (sliderLength < 0) {
           this.currentIndex++
@@ -122,7 +121,7 @@ export default {
 
   watch: {
     currentIndex (newIndex, oldIndex) {
-      if ((newIndex === 1 && oldIndex === (this.sliderLength - 1)) || (oldIndex === 0 && newIndex === this.sliderLength - 2)) {
+      if ((newIndex === 1 && oldIndex === (this.sliderListLength - 1)) || (oldIndex === 0 && newIndex === this.sliderListLength - 2)) {
         this.isResetIndex = true // 取消过渡动画，transition 属性
         return
       }
@@ -132,8 +131,8 @@ export default {
 
       setTimeout(() => {
         if (this.currentIndex === 0) {
-          this.currentIndex = this.sliderLength - 2
-        } else if (this.currentIndex === this.sliderLength - 1) {
+          this.currentIndex = this.sliderListLength - 2
+        } else if (this.currentIndex === this.sliderListLength - 1) {
           this.currentIndex = 1
         }
         this.isTransforming = false
@@ -143,6 +142,10 @@ export default {
 
   mounted () {
     this.startSlider()
+  },
+
+  destroyed () {
+    clearInterval(this.innerTimer) // 在组件销毁后清理定时器
   }
 }
 </script>
@@ -150,7 +153,7 @@ export default {
 <style lang="scss" scoped>
 @import '~scss/variables';
 .slider {
-  position: relative;
+  position: absolute;
   top: 0;
   left: 0;
   min-width: 100%;
@@ -159,19 +162,14 @@ export default {
   .slider-group {
       white-space: nowrap;
     .slider-item {
-      position: relative;
       display: inline-block;
-      top: 0;
-      padding: 0;
-      padding-top: 40%;
-      width: 100vw;
+      width: 100%;
       a {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100vw;
+        display: block;
+        height: 100%;
+        width: 100%;
         img {
-          width: 100vw;
+          width: 100%;
         }
       }
     }
