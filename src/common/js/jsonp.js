@@ -7,11 +7,7 @@ export default function jsonp (url, data, option) {
 
   return new Promise((resolve, reject) => {
     originJSONP(url, option, (err, data) => {
-      if (!err) {
-        resolve(data)
-      } else {
-        reject(err)
-      }
+      !err ? resolve(data) : reject(err)
     })
   })
 }
@@ -24,5 +20,5 @@ function param (data) {
     url += `&${key}=${encodeURIComponent(value)}`
   }
   // String.prototype.substring(indexStart[, indexEnd])
-  return url ? url.subString(1) : ''
+  return url ? url.substring(1) : ''
 }

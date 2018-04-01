@@ -8,3 +8,12 @@ html, body {
   background: $color-background;
   color: $color-text;
 }
+
+ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
