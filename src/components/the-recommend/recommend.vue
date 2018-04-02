@@ -39,7 +39,7 @@
 
 <script>
 import { getRecommend, getPlayList } from '@/api/the-recommend'
-import { ERR_OK } from '@/api/config'
+import { ERR_OK } from 'api/config'
 import BaseSlider from 'base/base-slider'
 import BaseScroll from 'base/base-scroll'
 import BaseLoading from 'base/base-loading/base-loading'
@@ -75,10 +75,9 @@ export default {
     }
 
     /**
-     * 若 .slider-wrapper 不使用 padding 轮播图占位，那么监听 load 事件调用
-     * loadImg 刷新 BaseScroll 组件状态，以重新计算滚动高度
-     * 
-     * 给 img 标签添加 @load="loadImg"
+     * 1.若 .slider-wrapper 不使用 padding 轮播图占位，那么监听 load 事件调用
+     *   loadImg 刷新 BaseScroll 组件状态，以重新计算滚动高度
+     * 2.给 img 标签添加 @load="loadImg"
      */
 
     // loadImg () {
@@ -165,7 +164,7 @@ export default {
   .loading-container {
     position: absolute;
     width: 100%;
-    top: 50%; // 左上顶点至已定位祖先容器的 50% 
+    top: 50%; // 左上顶点至已定位祖先容器的 50%
     transform: translateY(-50%); // 上移自身高度的 50%
   }
 }

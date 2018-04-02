@@ -29,6 +29,14 @@ export default {
         click: this.click
       })
     },
+
+    scrollTo () {
+      this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
+    },
+
+    scrollToElement () {
+      this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
+    },
     // 代理执行的方法，意在组件外部调用内部方法更新组件状态
     enable () {
       this.scroll && this.scroll.enable()
