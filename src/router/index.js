@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Recommend from 'components/the-recommend/recommend'
 import Artist from 'components/the-artist/artist'
+import ArtistDetail from 'components/the-artist-detail/the-artist-detail'
 import Ranking from 'components/the-ranking/ranking'
 import Search from 'components/the-search/search'
 
@@ -19,7 +20,13 @@ export default new Router({
     },
     {
       path: '/artist',
-      component: Artist
+      component: Artist,
+      children: [
+        {
+          path: ':id',
+          component: ArtistDetail
+        }
+      ]
     },
     {
       path: '/ranking',

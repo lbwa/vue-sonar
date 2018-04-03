@@ -1,5 +1,5 @@
 import jsonp from '@/common/js/jsonp'
-import { commonParams, options, ARTIST_URL } from './config'
+import { commonParams, options, ARTIST_URL, ARTIST_DETAIL_URL } from './config'
 
 export function getArtistList () {
   const data = {
@@ -17,4 +17,22 @@ export function getArtistList () {
     }
   }
   return jsonp(ARTIST_URL, data, options)
+}
+
+export function getArtistDetail (artistId) {
+  const data = {
+    ...commonParams,
+    ...{
+      g_tk: 1471438518,
+      hostUin: 0,
+      needNewCode: 0,
+      platform: 'yqq',
+      order: 'listen',
+      begin: 0,
+      num: 30,
+      songstatus: 1,
+      singermid: artistId
+    }
+  }
+  return jsonp(ARTIST_DETAIL_URL, data, options)
 }

@@ -20,6 +20,7 @@
             class="list-group-item"
             v-for="(item, childIndex) of group.items"
             :key="childIndex"
+            @click="selectItem(item)"
           >
             <!-- 图像懒加载 -->
             <img v-lazy="item.avatar" width="50" height="50" alt="artist-avatar">
@@ -101,7 +102,7 @@ export default {
           transform: `translateY(${-(TITLE_HEIGHT - this.difference)}px)`
         }
       } else {
-        return
+        return {}
       }
     }
   },
@@ -150,6 +151,10 @@ export default {
         height += list[i].clientHeight
         this.listHeight.push(height)
       }
+    },
+
+    selectItem (item) { // 路由跳转
+      this.$emit('select', item)
     }
   },
 

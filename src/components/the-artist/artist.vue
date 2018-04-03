@@ -1,6 +1,7 @@
 <template>
   <div class="artist">
-    <BaseList :artistData="artistList"></BaseList>
+    <BaseList :artistData="artistList" @select="selectArtist"></BaseList>
+    <router-view/>
   </div>
 </template>
 
@@ -9,6 +10,7 @@ import { getArtistList } from 'api/the-artist'
 import { ERR_OK } from 'api/config'
 import BaseList from 'base/base-list'
 import Artist from 'common/js/normalize-artist'
+import { mapMutations } from 'vuex'
 
 const HOT_NAME = '热门'
 const HOT_ARTIST_LENGTH = 10
@@ -76,7 +78,17 @@ export default {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0)
       })
       return [...hot, ...ret, ...other]
-    }
+    },
+
+    selectArtist (artist) {
+      // path 覆盖 params
+      this.$router.push({ path: `/artist/${artist.id}` })
+      this.setArtist(artist)
+    },
+
+    ...mapMutations({
+      setArtist: 'SET_ARTIST' // 将 `this.setArtist()` 映射为 `this.$store.commit('SET_ARTIST')`
+    })
   },
 
   components: {
