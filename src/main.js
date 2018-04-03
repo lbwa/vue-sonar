@@ -10,7 +10,7 @@ import 'scss/index.scss'
 fastclick.attach(document.body)
 
 Vue.use(VueLazyLoad, {
-  loading: require('@/common/image/default.png')
+  loading: require('@/common/image/default/default.png')
 })
 
 Vue.config.productionTip = false

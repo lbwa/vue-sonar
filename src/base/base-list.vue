@@ -28,7 +28,8 @@
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut">
+
+    <div class="list-shortcut" v-show="artistData.length">
       <ul>
         <li
           v-for="(item, index) of shortcutList"
@@ -42,6 +43,15 @@
         </li>
       </ul>
     </div>
+    <div
+      class="fixed-title"
+      v-show="scrollY < 0"
+      :style="translateY"
+    >
+      <h1 class="fixed-title-content">{{ fixedTitle }}</h1>
+    </div>
+
+    <BaseLoading v-if="artistData.length === 0"/>
   </BaseScroll>
 </template>
 
@@ -51,8 +61,10 @@
  */
 import BaseScroll from 'base/base-scroll'
 import { getData } from 'common/js/control-dom'
+import BaseLoading from 'base/base-loading/base-loading'
 
 const ANCHOR_HEIGHT = 18 // 侧边导航单个 li 元素高度
+const TITLE_HEIGHT = 30 // 顶端标题的高度，用于计算差值
 
 export default {
   props: {
@@ -67,7 +79,30 @@ export default {
   data () {
     return {
       scrollY: -1, // 当前滚动 scrollY 值，如同 window.scrollY
-      currentIndex: 0 // 当前 title 的 index
+      currentIndex: 0, // 当前 title 的 index
+      difference: 0 // scrollY 与 i + 1 锚点 y 坐标的差值
+    }
+  },
+
+  computed: {
+    shortcutList () {
+      return this.artistData.map(group => {
+        return group.title.substr(0, 1) // 返回首字母
+      })
+    },
+
+    fixedTitle () {
+      return this.artistData[this.currentIndex] ? this.artistData[this.currentIndex].title : []
+    },
+
+    translateY () {
+      if (this.difference && this.difference < TITLE_HEIGHT) {
+        return {
+          transform: `translateY(${-(TITLE_HEIGHT - this.difference)}px)`
+        }
+      } else {
+        return
+      }
     }
   },
 
@@ -139,6 +174,7 @@ export default {
         let heightEnd = listHeight[i + 1]
         if (-newY >= heightStart && -newY < heightEnd) {
           this.currentIndex = i
+          this.difference = this.listHeight[i + 1] - (-newY)
           return
         }
       }
@@ -160,22 +196,24 @@ export default {
     this.probeType = 3 // better-scroll 是否节流，节流（值为0）表现为只有 touch 时的滚动才被监听，不会监听手指离开屏幕滑动页面时的滚动
   },
 
-  computed: {
-    shortcutList () {
-      return this.artistData.map(group => {
-        return group.title.substr(0, 1) // 返回首字母
-      })
-    }
-  },
-
   components: {
-    BaseScroll
+    BaseScroll,
+    BaseLoading
   }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~scss/variables';
+
+%title {
+  height: 30px;
+  line-height: 30px;
+  padding-left: 20px;
+  font-size: $font-size-small;
+  color: $color-text-l;
+  background-color: $color-highlight-background;
+}
 
 .scroll-wrapper {
   position: relative;
@@ -187,12 +225,7 @@ export default {
   .list-group {
     padding-bottom: 30px;
     .list-group-title {
-      height: 30px;
-      line-height: 30px;
-      padding-left: 20px;
-      font-size: $font-size-small;
-      color: $color-text-l;
-      background-color: $color-highlight-background;
+      @extend %title
     }
     .list-group-item {
       display: flex;
@@ -213,6 +246,7 @@ export default {
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
+    z-index: 10;
     width: 20px;
     padding: 20px 0;
     text-align: center;
@@ -229,6 +263,20 @@ export default {
         font-size: $font-size-small;
       }
     }
+  }
+  .fixed-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    .fixed-title-content {
+      @extend %title
+    }
+  }
+  .loading {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 </style>
