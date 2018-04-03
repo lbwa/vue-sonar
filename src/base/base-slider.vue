@@ -77,7 +77,7 @@ export default {
       if (evt.target !== evt.currentTarget) {
         clearInterval(this.innerTimer)
         this.isResetIndex = true
-        this.startLocation = evt.targetTouches[0].screenX // 因 js 限制， vue 无法监听属性值 screenX 的变化
+        this.startLocation = evt.targetTouches[0].screenX // 因 js 限制， vue 无法监听属性值的变化
       }
     },
     touching (evt) {

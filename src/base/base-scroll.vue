@@ -19,6 +19,10 @@ export default {
     data: { // 用于跟踪父组件数据对象的变化，即 ajax 是否返回了 slot 插槽中所需的数据，即确定刷新滚动组件的时机
       type: Array,
       default: null
+    },
+    listenScroll: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -28,6 +32,13 @@ export default {
         probeType: this.probeType,
         click: this.click
       })
+
+      if (this.listenScroll) {
+        let that = this
+        this.scroll.on('scroll', pos => { // 监听原生滚动事件，派发一个滚动事件
+          that.$emit('scroll', pos)
+        })
+      }
     },
 
     scrollTo () {
@@ -52,7 +63,7 @@ export default {
   },
 
   watch: {
-    data () { // 自身根据 ajax 数据返回刷新滚动组件
+    data () { // 自身根据 ajax 数据（props 中的 data 属性）返回刷新滚动组件
       this.$nextTick(() => {
         this.refresh()
       })

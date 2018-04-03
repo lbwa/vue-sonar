@@ -1,12 +1,19 @@
 <template>
-  <BaseScroll :data="artistData" class="scroll-wrapper" ref="list">
+  <BaseScroll
+    :data="artistData"
+    :listenScroll="listenScroll"
+    :probeType="probeType"
+    @scroll="scroll"
+    class="scroll-wrapper"
+    ref="list"
+  >
     <ul>
       <li
         class="list-group"
         v-for="(group, index) of artistData"
         :key="index"
         ref="group"
-      >
+        >
         <h2 class="list-group-title">{{ group.title }}</h2>
         <ul>
           <li
@@ -27,7 +34,7 @@
           v-for="(item, index) of shortcutList"
           :key="index"
           :data-index="index"
-          class="list-shortcut-item"
+          :class="['list-shortcut-item', currentIndex === index ? 'active' : '']"
           @touchstart="onShortcutToTouchStart"
           @touchmove.stop.prevent="onShortcutToTouchMove"
         >
@@ -39,8 +46,11 @@
 </template>
 
 <script>
+/**
+ * 开发时，热刷新本组件将清空 this.listHeight，则每次修改本组件都必须刷新页面才能正确获得 this.listHeight（因为计算 this.listHeight 是由监听 artistData 触发）
+ */
 import BaseScroll from 'base/base-scroll'
-import { getData } from 'common/js/dom'
+import { getData } from 'common/js/control-dom'
 
 const ANCHOR_HEIGHT = 18 // 侧边导航单个 li 元素高度
 
@@ -51,6 +61,13 @@ export default {
       default () {
         return []
       }
+    }
+  },
+
+  data () {
+    return {
+      scrollY: -1, // 当前滚动 scrollY 值，如同 window.scrollY
+      currentIndex: 0 // 当前 title 的 index
     }
   },
 
@@ -65,28 +82,88 @@ export default {
     // 计算偏移距离，以至于得到偏移个数，之后调用跳转元素方法，达到 touchmove 滚动 list 的效果
     onShortcutToTouchMove (evt) {
       this.touch.y2 = evt.touches[0].pageY
-      let jumpNumber = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0// 触摸偏移
-      let anchorIndex = this.touch.anchorIndex + jumpNumber
+      let jumpNumber = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0 // 触摸偏移。其中设置初始值 0
+      let anchorIndex = parseInt(this.touch.anchorIndex) + jumpNumber // anchorIndex 为字符串
       this._scrollTo(anchorIndex)
-      console.log('running')
+    },
+
+    scroll (pos) {
+      this.scrollY = pos.y
     },
 
     _scrollTo (index) {
-      this.$refs.list.scrollToElement(this.$refs.group[index], 0) // 跳转至元素
+      if (!index && index !== 0) { // 排除 index 为 null
+        return
+      }
+      if (index < 0) {
+        index = 0
+      } else if (index > this.listHeight.length - 2) {
+        index = this.listHeight.length - 2
+      }
+      this.scrollY = -this.listHeight[index] // 效果：点击行为切换 active 类
+      this.$refs.list.scrollToElement(this.$refs.group[index], 0) // 调用子组件方法跳转至锚点, 0表示动画时间
+    },
+
+    _calculateHeight () {
+      this.listHeight = []
+      const list = this.$refs.group
+      let height = 0
+      this.listHeight.push(height)
+
+      for (let i = 0; i < list.length; i++) {
+        // clientHeight = height + padding - 水平滚动条
+        height += list[i].clientHeight
+        this.listHeight.push(height)
+      }
+    }
+  },
+
+  watch: {
+    artistData () {
+      setTimeout(() => {
+        this._calculateHeight()
+      }, 20)
+    },
+
+    scrollY (newY) {
+      const listHeight = this.listHeight // 开发时，刷新本组件将清空 this.listHeight，则必须刷新页面才能正确获得 this.listHeight
+
+      // 滚动到顶端时，newY > 0
+      if (newY > 0) {
+        this.currentIndex = 0
+        return
+      }
+      // 滚动到中间部分
+      for (let i = 0; i < listHeight.length - 1; i++) {
+        let heightStart = listHeight[i]
+        let heightEnd = listHeight[i + 1]
+        if (-newY >= heightStart && -newY < heightEnd) {
+          this.currentIndex = i
+          return
+        }
+      }
+      // 滚动到底部，且 -newY > 最后一个元素的上限
+      this.currentIndex = listHeight.length - 2
     }
   },
 
   created () {
-    // vue 在初始化组件时会将 data 和 props 中数据对象添加 getter 和 setter ，从而达到监听数据变化的目的
+    // vue 在初始化组件时会将 data 和 props 中数据对象添加 getter 和 setter ，从而达到监听数据变化(以更新 DOM)的目的
 
-    // this.touch 并不需要监听观测变化，故在 created 钩子中创建并初始化
-    this.touch = {}
+    // this.touch 并不需要监听观测变化(以更新 DOM)，是组件内部的一个缓存数据的容器，故在 created 钩子中创建并初始化
+    this.touch = {} // 滚动坐标容器
+
+    this.listenScroll = true // 传入 base-scroll，是否需要监听滚动
+
+    this.listHeight = [] // 元素高度的存储容器
+
+    this.probeType = 3 // better-scroll 是否节流，节流（值为0）表现为只有 touch 时的滚动才被监听，不会监听手指离开屏幕滑动页面时的滚动
   },
 
   computed: {
     shortcutList () {
       return this.artistData.map(group => {
-        return group.title.substr(0, 1)
+        return group.title.substr(0, 1) // 返回首字母
       })
     }
   },
@@ -142,9 +219,12 @@ export default {
     border-radius: 10px;
     background-color: $color-background-d;
     .list-shortcut-item {
-        padding: 3px;
-        line-height: 1;
-        color: $color-text-l;
+      padding: 3px;
+      line-height: 1;
+      color: $color-text-l;
+      &.active {
+        color: $color-theme;
+      }
       .list-shortcut-content {
         font-size: $font-size-small;
       }
