@@ -5,11 +5,12 @@
         class="list-item"
         v-for="(item, index) of songsData"
         :key="index"
+        @click="selectedItem(item, index)"
       >
         <div class="item-rank" v-show="false"></div>
         <div class="item-content">
           <h2 class="item-title">{{ item.name }}</h2>
-          <p class="item-description">{{ item.artist }}·{{ item.album }}</p>
+          <p class="item-description">{{ item.artist }} · {{ item.album }}</p>
         </div>
       </li>
     </ul>
@@ -24,6 +25,12 @@ export default {
       default () {
         return []
       }
+    }
+  },
+
+  methods: {
+    selectedItem (song, index) {
+      this.$emit('select', song, index)
     }
   }
 }

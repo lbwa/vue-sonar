@@ -1,5 +1,5 @@
 <template>
-<div class="ranking">Ranking area</div>
+  <div class="ranking">Ranking area</div>
 </template>
 
 <script>

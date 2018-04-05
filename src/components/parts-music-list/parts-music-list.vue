@@ -29,7 +29,7 @@
       :data="songs"
       @scroll="scrollSongsList"
     >
-      <BaseSongList :songsData="songs"/>
+      <BaseSongList :songsData="songs" @select="selectedSong"/>
 
       <div v-if="songs.length === 0" class="loading-wrapper">
         <BaseLoading/>
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import BaseSongList from 'base/base-songs-list'
 import BaseScroll from 'base/base-scroll'
 import BaseLoading from 'base/base-loading/base-loading'
@@ -74,11 +75,21 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'selectedPlay'
+    ]),
     back () {
       this.$router.back()
     },
     scrollSongsList (pos) {
       this.scrollY = pos.y
+    },
+
+    selectedSong (item, index) {
+      this.selectedPlay({
+        list: this.songs,
+        index
+      })
     }
   },
 

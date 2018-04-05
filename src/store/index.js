@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import state from './state'
 import * as getters from './getters.js'
 import mutations from './mutations'
-import actions from './actions'
+import * as actions from './actions'
 import createLogger from 'vuex/dist/logger' // 每次修改 state ，都会打印新旧 state
 
 Vue.use(Vuex)
