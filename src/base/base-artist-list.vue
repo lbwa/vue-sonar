@@ -58,7 +58,8 @@
 
 <script>
 /**
- * 开发时，热刷新本组件将清空 this.listHeight，则每次修改本组件都必须刷新页面才能正确获得 this.listHeight（因为计算 this.listHeight 是由监听 artistData 触发）
+ * 开发时，热刷新本组件将清空 this.listHeight，则每次修改本组件都必须刷新页面才能正确
+ * 获得 this.listHeight（因为计算 this.listHeight 是由监听 artistData 触发）
  */
 import BaseScroll from 'base/base-scroll'
 import { getData } from 'common/js/control-dom'

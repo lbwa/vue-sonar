@@ -1,6 +1,6 @@
 <template>
   <div class="artist">
-    <BaseList :artistData="artistList" @select="selectArtist"></BaseList>
+    <BaseArtistList :artistData="artistList" @select="selectArtist"></BaseArtistList>
     <router-view/>
   </div>
 </template>
@@ -8,7 +8,7 @@
 <script>
 import { getArtistList } from 'api/the-artist'
 import { ERR_OK } from 'api/config'
-import BaseList from 'base/base-list'
+import BaseArtistList from 'base/base-artist-list'
 import Artist from 'common/js/normalize-artist'
 import { mapMutations } from 'vuex'
 
@@ -92,7 +92,7 @@ export default {
   },
 
   components: {
-    BaseList
+    BaseArtistList
   },
 
   created () {

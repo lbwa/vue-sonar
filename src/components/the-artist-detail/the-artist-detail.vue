@@ -1,6 +1,6 @@
 <template>
   <transition name="slider">
-    <MusicList
+    <PartsMusicList
       :bgImage="bgImage"
       :title="title"
       :songs="songs"
@@ -13,7 +13,7 @@ import { mapGetters } from 'vuex'
 import { getArtistDetail } from 'api/the-artist'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/normalize-song'
-import MusicList from 'components/the-music-list/the-music-list'
+import PartsMusicList from 'components/parts-music-list/parts-music-list'
 
 export default {
   data () {
@@ -67,7 +67,7 @@ export default {
   },
 
   components: {
-    MusicList
+    PartsMusicList
   }
 }
 </script>
