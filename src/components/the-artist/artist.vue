@@ -1,6 +1,9 @@
 <template>
-  <div class="artist">
-    <BaseArtistList :artistData="artistList" @select="selectArtist"></BaseArtistList>
+  <div class="artist" ref="artist">
+    <BaseArtistList
+      ref="artistList"
+      :artistData="artistList" @select="selectArtist"
+    />
     <router-view/>
   </div>
 </template>
@@ -23,6 +26,12 @@ export default {
   },
 
   methods: {
+    // handlePlayList (playlist) {
+    //   const bottom = playlist.length > 0 ? '60px' : ''
+    //   this.$refs.artist.style.bottom = bottom
+    //   this.$refs.artistList.refresh()
+    // },
+
     _getArtistList () {
       getArtistList().then(res => {
         if (res.code === ERR_OK) {

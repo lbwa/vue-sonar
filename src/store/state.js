@@ -7,7 +7,7 @@ const state = { // 只保留最基础的数据，由基础数据可计算得到�
   playList: [],
   sequenceList: [], // 有特定顺序的 playlist
   mode: playMode.sequence, // 语义化值，而不是直接写属性值
-  currentIndex: -1
+  currentIndex: -1 // 当前播放歌曲的索引，驱动歌曲的播放行为
 }
 
 export default state

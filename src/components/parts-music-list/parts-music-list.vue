@@ -87,8 +87,8 @@ export default {
 
     selectedSong (item, index) {
       this.selectedPlay({
-        list: this.songs,
-        index
+        list: this.songs, // 传入整个歌单而非单曲，以填充播放列表
+        index // 传入点击的索引，以知晓当前应该播放的歌曲
       })
     }
   },
