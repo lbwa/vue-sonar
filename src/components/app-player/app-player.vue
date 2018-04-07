@@ -1,6 +1,6 @@
 <template>
   <div class="music-player" v-show="playList.length > 0">
-    <!-- @leave="leave" 是与我定义的样式无关，因为删除样式一样 leava-to 会卡住 -->
+    <!-- @leave="leave" 是与我定义的样式无关，因为删除样式一样 leave-to 会卡住 -->
     <transition
       name="normal"
       @enter="enter"
