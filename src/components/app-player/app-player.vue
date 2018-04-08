@@ -40,10 +40,12 @@
         </div>
         <!-- 底部控制组件 -->
         <div class="parts-bottom">
-          <!-- 进度条 -->
+          <!-- 进度条时间 -->
           <div class="progress-wrapper">
             <span class="time time-l">{{ currentTime | formatTime }}</span>
-            <div class="progress-bar-wrapper"></div>
+            <div class="progress-bar-wrapper">
+              <BaseProgressBar :currentPercent="playPercent" @percentChange="onProgressChange"/>
+            </div>
             <span class="time time-r">{{ currentSong.duration | formatTime }}</span>
           </div>
           <!-- 播放控件 -->
@@ -92,7 +94,9 @@
         </div>
 
         <div class="mini-control-btn" @click.stop.prevent="togglePlaying">
-          <i :class="[playing ? 'icon-pause-mini' : 'icon-play-mini']"></i>
+          <BaseProgressCircle :radius="radius" :percent="playPercent">
+            <i :class="['icon-mini', playing ? 'icon-pause-mini' : 'icon-play-mini']"></i>
+          </BaseProgressCircle>
         </div>
 
         <div class="mini-play-list">
@@ -113,6 +117,8 @@
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from 'common/js/control-dom'
+import BaseProgressBar from 'base/base-progress-bar'
+import BaseProgressCircle from 'base/base-progress-circle'
 
 const transform = prefixStyle('transform')
 
@@ -120,7 +126,8 @@ export default {
   data () {
     return {
       songReady: false, // 用于限制点击行为
-      currentTime: 0
+      currentTime: 0,
+      radius: 32
     }
   },
 
@@ -177,6 +184,16 @@ export default {
 
     timeUpdate (evt) {
       this.currentTime = evt.target.currentTime
+    },
+
+    // 根据位移得到 percent ，传递出 percent 得到目标时间
+    // currentTime 是可读写的属性
+    onProgressChange (percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration * percent
+
+      if (!this.playing) {
+        this.togglePlaying()
+      }
     },
 
     // vue transition 动画 hook
@@ -250,7 +267,7 @@ export default {
     formatTime (value) {
       value = value | 0 // 等同于 Math.floor
       const min = value / 60 | 0
-      // Number.prototype.toLocaleString() 格式化数字为字符串
+      // Number.prototype.toLocaleString() 格式化数字，结果为字符串
       const sec = (value % 60).toLocaleString('zh', { minimumIntegerDigits: 2 })
       return `${min}:${sec}`
     }
@@ -280,6 +297,10 @@ export default {
     disableBtn () {
       return this.songReady ? '' : 'disable'
     },
+
+    playPercent () {
+      return this.currentTime / this.currentSong.duration
+    },
     ...mapGetters([
       'fullScreen',
       'playList',
@@ -287,6 +308,11 @@ export default {
       'playing',
       'currentIndex'
     ])
+  },
+
+  components: {
+    BaseProgressBar,
+    BaseProgressCircle
   }
 }
 </script>
@@ -408,12 +434,22 @@ export default {
       bottom: 50px;
       width: 100%;
       .progress-wrapper {
+        display: flex;
+        margin: 0 auto;
+        width: 80%;
+        padding: 10px 0;
         .time {
           color: $color-text;
           font-size: $font-size-small;
           flex: 0 0 30px;
           line-height: 30px;
           width: 30px;
+        }
+        .time-r {
+          text-align: right;
+        }
+        .progress-bar-wrapper {
+          flex: 1;
         }
       }
       .player-operators {
@@ -509,12 +545,12 @@ export default {
       flex: 0 0 30px;
       width: 30px;
       padding: 0 10px;
-      .icon-play-mini, .icon-pause-mini {
+      .icon-mini {
+        position: absolute; // 相对于 base-progress-circle 中容器元素定位
+        top: 0;
+        left: 0;
         font-size: 32px;
         color: $color-theme-d;
-      }
-      .icon-pause-mini {
-        color: $color-theme;
       }
     }
     .mini-play-list {
