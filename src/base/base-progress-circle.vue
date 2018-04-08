@@ -1,8 +1,8 @@
 <template>
   <div class="progress-circle">
     <svg :width="radius" :height="radius" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <circle class="progress-background" r="50" cx="50" cy="50" fill="transparent"/><!-- 内层圆 -->
-      <circle class="progress-bar" r="50" cx="50" cy="50" fill="transparent" :stroke-dasharray="dashArray" :stroke-dashoffset="dashoffset"/><!-- 外层圆 -->
+      <circle class="progress-background" r="50" cx="50" cy="50" fill="transparent"/><!-- 底层圆 -->
+      <circle class="progress-bar" r="46" cx="50" cy="50" fill="transparent" :stroke-dasharray="dashArray" :stroke-dashoffset="dashoffset"/><!-- 上层圆，1 - dashoffset 定义显示的部分 -->
     </svg>
     <slot></slot>
   </div>

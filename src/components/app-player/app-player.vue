@@ -51,8 +51,8 @@
           <!-- 播放控件 -->
           <div class="player-operators">
 
-            <div class="icon icon-left">
-              <i class="icon-sequence"></i>
+            <div class="icon icon-left" @click="changeMode">
+              <i :class="iconMode"></i>
             </div>
             <div :class="['icon', 'icon-left', disableBtn]">
               <i class="icon-prev" @click="prevSong"></i>
@@ -119,6 +119,8 @@ import animations from 'create-keyframe-animation'
 import { prefixStyle } from 'common/js/control-dom'
 import BaseProgressBar from 'base/base-progress-bar'
 import BaseProgressCircle from 'base/base-progress-circle'
+import { playMode } from 'common/js/config'
+import { shuffle } from 'common/js/util'
 
 const transform = prefixStyle('transform')
 
@@ -157,6 +159,7 @@ export default {
     openFullScreen () {
       this.setFullScreen(true)
     },
+
     // 修复暂停时，点击下一曲或上一曲的错误显示
     fixPlayingStatus () {
       if (!this.playing) {
@@ -194,6 +197,28 @@ export default {
       if (!this.playing) {
         this.togglePlaying()
       }
+    },
+
+    changeMode () {
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+
+      let list = null
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList) // 打乱顺序
+      } else {
+        list = this.sequenceList
+      }
+      this.resetCurrentIndex(list)
+      this.setPlayList(list) // 经试验，playList 的改变不会导致 currentSong 的重新计算
+    },
+    // 保证 playList 改变时不会改变当前播放歌曲
+    resetCurrentIndex (list) {
+      let index = list.findIndex(item => {
+        return item.id === this.currentSong.id
+      }) // 在修改后的 list 中找到当前播放的 index
+
+      this.setCurrentIndex(index)
     },
 
     // vue transition 动画 hook
@@ -259,7 +284,9 @@ export default {
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlayList: 'SET_PLAYLIST'
     })
   },
 
@@ -275,7 +302,9 @@ export default {
 
   watch: {
     // nextTick 防止报错 DOMException: The play() request was interrupted by a new load request (原因：异步请求)
-    currentSong () {
+    currentSong (newSong, oldSong) {
+      if (newSong.id === oldSong.id) return // 防止暂停时切模式自动播放问题
+
       this.$nextTick(() => {
         this.$refs.audio.play()
       })
@@ -301,12 +330,19 @@ export default {
     playPercent () {
       return this.currentTime / this.currentSong.duration
     },
+
+    iconMode () {
+      return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+    },
+
     ...mapGetters([
       'fullScreen',
       'playList',
       'currentSong',
       'playing',
-      'currentIndex'
+      'currentIndex',
+      'mode',
+      'sequenceList'
     ])
   },
 
