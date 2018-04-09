@@ -19,3 +19,5 @@ export const PLAYLIST_URL = '/api/getPlayList'
 export const ARTIST_URL = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg'
 
 export const ARTIST_DETAIL_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
+
+export const LYRIC_URL = '/api/getLyric'

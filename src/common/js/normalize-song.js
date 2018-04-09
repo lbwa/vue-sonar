@@ -1,3 +1,7 @@
+import { getLyric } from 'api/get-lyric'
+import { ERR_OK } from 'api/config'
+import { Base64 } from 'js-base64'
+
 export default class Song {
   constructor ({ id, mid, artist, name, album, duration, image, url }) {
     this.id = id
@@ -8,6 +12,29 @@ export default class Song {
     this.duration = duration
     this.image = image
     this.url = url
+  }
+
+  getLyric () {
+    if (this.lyric) { // 存在 this.lyric 忽略请求
+      return Promise.resolve(this.lyric) // 保证返回的是一个 promise 对象
+    }
+
+    /**
+     * 因为需要对 this.lyric 进行数据处理，那么需要 getSongLyric() 返回一个 promise
+     * 对象。返回 promise 对象，而不直接返回值的原因是，需要对 retcode 不为 ERR_OK
+     * 的情况处理。
+     */
+
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then(res => {
+        if (res.retcode === ERR_OK) {
+          this.lyric = Base64.decode(res.lyric)
+          resolve(this.lyric)
+        } else {
+          reject(new Error('No lyric'))
+        }
+      })
+    })
   }
 }
 

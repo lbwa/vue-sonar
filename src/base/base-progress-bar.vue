@@ -33,8 +33,17 @@ export default {
 
   methods: {
     progressClick (evt) {
-      // offsetX 规定了事件对象与目标节点的 padding edge 在 X 轴方向上的偏移量
-      this._offset(evt.offsetX)
+      const rect = this.$refs.progressBar.getBoundingClientRect()
+      console.log(rect)
+      const offsetWidth = evt.pageX - rect.left
+
+      /**
+       * 1. _offset() 本可传入参数 evt.offsetX，offsetX 规定了事件对象与目标节点的
+       * padding edge 在 X 轴方向上的偏移量
+       * 2. 不使用 offsetX 的原因是，在点击小圆点时，偏移量计算错误
+       */
+
+      this._offset(offsetWidth)
       this._triggerPercent()
     },
 

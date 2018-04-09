@@ -1,6 +1,6 @@
 <template>
   <div class="music-player" v-show="playList.length > 0">
-    <!-- @leave="leave" 是与我定义的样式无关，因为删除样式一样 leave-to 会卡住 -->
+    <!-- @leave="leave" 是与我定义的样式无关，因为删除样式一样 leave-to 类名会卡住 -->
     <transition
       name="normal"
       @enter="enter"
@@ -36,7 +36,14 @@
             </div>
             <p class="playing-lyric">lyric area</p>
           </div>
-          <div class="middle-lyric"></div>
+          <div class="middle-lyric" ref="lyricList">
+            <div class="lyric-wrapper">
+              <p class="lyric-text" ref="currentLyric"
+                v-for="(item, index) of currentLyric.lines"
+                :key="index"
+              >{{ item.txt }}</p>
+            </div>
+          </div>
         </div>
         <!-- 底部控制组件 -->
         <div class="parts-bottom">
@@ -108,7 +115,7 @@
     <audio
       ref="audio"
       :src="currentSong.url"
-      @canplay="readyPlay" @error="errorPlay" @timeupdate="timeUpdate"
+      @canplay="readyPlay" @error="errorPlay" @timeupdate="timeUpdate" @ended="endPlay"
     ></audio>
   </div>
 </template>
@@ -121,6 +128,7 @@ import BaseProgressBar from 'base/base-progress-bar'
 import BaseProgressCircle from 'base/base-progress-circle'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
+import LyricParser from 'lyric-parser'
 
 const transform = prefixStyle('transform')
 
@@ -129,7 +137,8 @@ export default {
     return {
       songReady: false, // 用于限制点击行为
       currentTime: 0,
-      radius: 32
+      radius: 32,
+      currentLyric: {}
     }
   },
 
@@ -210,7 +219,12 @@ export default {
         list = this.sequenceList
       }
       this.resetCurrentIndex(list)
-      this.setPlayList(list) // 经试验，playList 的改变不会导致 currentSong 的重新计算
+      this.setPlayList(list)
+      /**
+       * 经试验，playList 的改变不会导致 currentSong 的重新计算（在 watch 中设定一
+       * 个 console ），currentIndex 会导致触发 watcher ，即 currentSong 会重新计
+       * 算。
+       */
     },
     // 保证 playList 改变时不会改变当前播放歌曲
     resetCurrentIndex (list) {
@@ -219,6 +233,28 @@ export default {
       }) // 在修改后的 list 中找到当前播放的 index
 
       this.setCurrentIndex(index)
+    },
+
+    endPlay () {
+      if (this.mode === playMode.loop) {
+        this.loopPlay()
+        return
+      }
+
+      this.nextSong()
+    },
+
+    loopPlay () {
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
+    },
+
+    getSongLyric () {
+      // getLyric 详见 common/js/normalize-song
+      this.currentSong.getLyric().then(lyric => {
+        this.currentLyric = new LyricParser(lyric)
+        console.log(this.currentLyric)
+      })
     },
 
     // vue transition 动画 hook
@@ -307,6 +343,7 @@ export default {
 
       this.$nextTick(() => {
         this.$refs.audio.play()
+        this.getSongLyric()
       })
     },
 
@@ -429,9 +466,14 @@ export default {
       top: 80px;
       bottom: 170px;
       width: 100%;
+      // 使得 .middle-album 与 .middle-lyric 并排排列，即使空间不够
+      white-space: nowrap;
       .middle-album {
+        display: inline-block;
         position: relative;
+        vertical-align: top;
         padding-top: 80%;
+        width: 100%;
         height: 0;
         .cd-wrapper {
           position: absolute;
@@ -462,6 +504,28 @@ export default {
           line-height: 20px;
           font-size: $font-size-medium;
           color: $color-text-l;
+        }
+      }
+      .middle-lyric {
+        display: inline-block;
+        vertical-align: top;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        .lyric-wrapper {
+          width: 80%;
+          margin: 0 auto;
+          overflow: hidden;
+          text-align: center;
+          .lyric-text {
+            line-height: 32px;
+            color: $color-text-l;
+            font-size: $font-size-medium;
+            &.current {
+              color: $color-text;
+              font-size: $font-size-medium-x;
+            }
+          }
         }
       }
     }

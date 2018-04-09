@@ -12,7 +12,7 @@
       :style="[bgStyle, scrollStyle]"
     >
       <div class="play-wrapper">
-        <div class="play-btn" ref="playBtn" v-show="songs.length">
+        <div class="play-btn" ref="playBtn" v-show="songs.length" @click="randomPlaySong">
           <i class="icon-play"></i>
           <span class="play-content">随机播放全部</span>
         </div>
@@ -76,7 +76,8 @@ export default {
 
   methods: {
     ...mapActions([
-      'selectedPlay'
+      'selectedPlay',
+      'randomPlay'
     ]),
     back () {
       this.$router.back()
@@ -89,6 +90,12 @@ export default {
       this.selectedPlay({
         list: this.songs, // 传入整个歌单而非单曲，以填充播放列表
         index // 传入点击的索引，以知晓当前应该播放的歌曲
+      })
+    },
+
+    randomPlaySong () {
+      this.randomPlay({
+        list: this.songs
       })
     }
   },
