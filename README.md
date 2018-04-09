@@ -3,6 +3,7 @@
 
 > A Vue.js music player
 
+[Online demo / 在线 Demo][demo]
 ## Build Setup
 
 ``` bash
@@ -20,3 +21,5 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+[demo]:https://lbwa.github.io/vue-sonar
