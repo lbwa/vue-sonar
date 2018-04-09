@@ -36,14 +36,21 @@
             </div>
             <p class="playing-lyric">lyric area</p>
           </div>
-          <div class="middle-lyric" ref="lyricList">
+          <BaseScroll
+            class="middle-lyric" ref="lyricList"
+            :data="currentLyric && currentLyric.lines"
+          >
             <div class="lyric-wrapper">
-              <p class="lyric-text" ref="currentLyric"
-                v-for="(item, index) of currentLyric.lines"
-                :key="index"
-              >{{ item.txt }}</p>
+              <div v-if="currentLyric">
+                <p
+                  ref="lyricLine"
+                  v-for="(item, index) of currentLyric.lines"
+                  :class="['lyric-text', currentLineNum === index ? 'current' : '']"
+                  :key="index"
+                >{{ item.txt }}</p>
+              </div>
             </div>
-          </div>
+          </BaseScroll>
         </div>
         <!-- 底部控制组件 -->
         <div class="parts-bottom">
@@ -129,6 +136,7 @@ import BaseProgressCircle from 'base/base-progress-circle'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
 import LyricParser from 'lyric-parser'
+import BaseScroll from 'base/base-scroll'
 
 const transform = prefixStyle('transform')
 
@@ -138,7 +146,8 @@ export default {
       songReady: false, // 用于限制点击行为
       currentTime: 0,
       radius: 32,
-      currentLyric: {}
+      currentLyric: null,
+      currentLineNum: 0
     }
   },
 
@@ -158,6 +167,7 @@ export default {
     togglePlaying () {
       if (!this.songReady) { return }
       this.setPlayingState(!this.playing)
+      this.currentLyric.togglePlay()
     },
 
     closeFullScreen () {
@@ -252,9 +262,22 @@ export default {
     getSongLyric () {
       // getLyric 详见 common/js/normalize-song
       this.currentSong.getLyric().then(lyric => {
-        this.currentLyric = new LyricParser(lyric)
-        console.log(this.currentLyric)
+        this.currentLyric = new LyricParser(lyric, this.handleLyric)
+        if (this.playing) {
+          this.currentLyric.play() // play() 是 LyricParser 的实例方法
+        }
       })
+    },
+
+    handleLyric ({ lineNum, txt }) {
+      this.currentLineNum = lineNum
+
+      if (lineNum > 5) {
+        let lineElement = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(lineElement, 1000)
+      } else {
+        this.$refs.lyricList.scrollToElement(0, 0, 1000)
+      }
     },
 
     // vue transition 动画 hook
@@ -385,7 +408,8 @@ export default {
 
   components: {
     BaseProgressBar,
-    BaseProgressCircle
+    BaseProgressCircle,
+    BaseScroll
   }
 }
 </script>
