@@ -22,9 +22,15 @@
           <h2 class="top-title" v-html="currentSong.name"></h2>
           <div class="top-subtitle" v-html="currentSong.artist"></div>
         </div>
+
         <!-- 中间旋转组件 -->
-        <div class="parts-middle">
-          <div class="middle-album">
+        <div
+          class="parts-middle"
+          @touchstart.prevent="middleTouchStart"
+          @touchmove.prevent="middleTouchMove"
+          @touchend.prevent="middleTouchEnd"
+        >
+          <div class="middle-album" ref="album">
             <div class="cd-wrapper" ref="cd">
               <div :class="['cd', rotateCD]">
                 <img
@@ -34,8 +40,11 @@
                 >
               </div>
             </div>
-            <p class="playing-lyric">lyric area</p>
+            <div class="playing-lyric-wrapper">
+              <p class="playing-lyric">{{ playingLyric }}</p>
+            </div>
           </div>
+
           <BaseScroll
             class="middle-lyric" ref="lyricList"
             :data="currentLyric && currentLyric.lines"
@@ -52,8 +61,13 @@
             </div>
           </BaseScroll>
         </div>
+
         <!-- 底部控制组件 -->
         <div class="parts-bottom">
+          <div class="dot-wrapper">
+            <span :class="['dot', currentShow === 'cd' ? 'active' : '']"></span>
+            <span :class="['dot', currentShow === 'lyric' ? 'active' : '']"></span>
+          </div>
           <!-- 进度条时间 -->
           <div class="progress-wrapper">
             <span class="time time-l">{{ currentTime | formatTime }}</span>
@@ -139,6 +153,7 @@ import LyricParser from 'lyric-parser'
 import BaseScroll from 'base/base-scroll'
 
 const transform = prefixStyle('transform')
+const transitionDuration = prefixStyle('transitionDuration')
 
 export default {
   data () {
@@ -147,7 +162,9 @@ export default {
       currentTime: 0,
       radius: 32,
       currentLyric: null,
-      currentLineNum: 0
+      currentLineNum: 0,
+      currentShow: 'cd',
+      playingLyric: ''
     }
   },
 
@@ -167,7 +184,10 @@ export default {
     togglePlaying () {
       if (!this.songReady) { return }
       this.setPlayingState(!this.playing)
-      this.currentLyric.togglePlay()
+
+      if (this.currentLyric) {
+        this.currentLyric.togglePlay()
+      }
     },
 
     closeFullScreen () {
@@ -188,9 +208,14 @@ export default {
 
     prevSong () {
       if (!this.songReady) { return }
-      // 因为只能是 mutations 修改 state ，故不能写 this.currentIndex--
-      const index = this.currentIndex === 0 ? this.playList.length - 1 : this.currentIndex - 1
-      this.setCurrentIndex(index)
+
+      if (this.playList.length === 1) {
+        this.loopPlay()
+      } else {
+        // 因为只能是 mutations 修改 state ，故不能写 this.currentIndex--
+        const index = this.currentIndex === 0 ? this.playList.length - 1 : this.currentIndex - 1
+        this.setCurrentIndex(index)
+      }
       this.fixPlayingStatus()
       this.songReady = false // songReady 复位
     },
@@ -198,9 +223,14 @@ export default {
     nextSong () {
       if (!this.songReady) { return }
       // 原因同 prevSong, this.currentIndex++ 存在赋值行为
-      const index = this.currentIndex === this.playList.length - 1 ? 0 : this.currentIndex + 1
-      this.setCurrentIndex(index)
-      this.fixPlayingStatus()
+
+      if (this.playList.length === 1) {
+        this.loopPlay()
+      } else {
+        const index = this.currentIndex === this.playList.length - 1 ? 0 : this.currentIndex + 1
+        this.setCurrentIndex(index)
+        this.fixPlayingStatus()
+      }
       this.songReady = false // songReady 复位
     },
 
@@ -211,10 +241,15 @@ export default {
     // 根据位移得到 percent ，传递出 percent 得到目标时间
     // currentTime 是可读写的属性
     onProgressChange (percent) {
-      this.$refs.audio.currentTime = this.currentSong.duration * percent
+      const currentTime = this.currentSong.duration * percent
+      this.$refs.audio.currentTime = currentTime
 
       if (!this.playing) {
         this.togglePlaying()
+      }
+
+      if (this.currentLyric) {
+        this.currentLyric.seek(currentTime * 1000)
       }
     },
 
@@ -257,6 +292,10 @@ export default {
     loopPlay () {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
+
+      if (this.currentLyric) {
+        this.currentLyric.seek(0)
+      }
     },
 
     getSongLyric () {
@@ -266,6 +305,10 @@ export default {
         if (this.playing) {
           this.currentLyric.play() // play() 是 LyricParser 的实例方法
         }
+      }).catch(() => {
+        this.currentLyric = null
+        this.playingLyric = ''
+        this.currentLineNum = 0
       })
     },
 
@@ -278,6 +321,8 @@ export default {
       } else {
         this.$refs.lyricList.scrollToElement(0, 0, 1000)
       }
+
+      this.playingLyric = txt
     },
 
     // vue transition 动画 hook
@@ -326,6 +371,68 @@ export default {
       this.$refs.cd.style[transform] = ''
     },
 
+    middleTouchStart (evt) {
+      this.touch.initiated = true
+      this.touch.startX = evt.touches[0].pageX
+      this.touch.startY = evt.touches[0].pageY
+    },
+
+    middleTouchMove (evt) {
+      if (!this.touch.initiated) return
+
+      const displaceX = evt.touches[0].pageX - this.touch.startX
+      const displaceY = evt.touches[0].pageY - this.touch.startY
+
+      // 排除纵向滚动
+      if (Math.abs(displaceY) > Math.abs(displaceX)) return
+
+      const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+      const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + displaceX))
+
+      this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+
+      this.$refs.album.style.opacity = `${1 - this.touch.percent}`
+      this.$refs.album.style[transitionDuration] = `0ms`
+
+      this.$refs.lyricList.$el.style[transform] = `translate(${offsetWidth}px)`
+      this.$refs.lyricList.$el.style[transitionDuration] = `0ms`
+    },
+
+    middleTouchEnd (evt) {
+      let offsetWidth = 0
+      let offsetOpacity = 0
+
+      if (this.currentShow === 'cd') {
+        if (this.touch.percent > 0.1) {
+          offsetWidth = -window.innerWidth
+          offsetOpacity = 0
+          this.currentShow = 'lyric'
+        } else {
+          offsetWidth = 0
+          offsetOpacity = 1
+        }
+      } else {
+        if (this.touch.percent < 0.9) {
+          offsetWidth = 0
+          offsetOpacity = 1
+          this.currentShow = 'cd'
+        } else {
+          offsetWidth = -window.innerWidth
+          offsetOpacity = 0
+        }
+      }
+
+      const durationTime = 300
+
+      this.$refs.lyricList.$el.style[transform] = `translateX(${offsetWidth}px)`
+      this.$refs.lyricList.$el.style[transitionDuration] = `${durationTime}ms`
+
+      this.$refs.album.style.opacity = `${offsetOpacity}`
+      this.$refs.album.style[transitionDuration] = `${durationTime}ms`
+
+      this.touch.initiated = false
+    },
+
     _getPositionAndScale () {
       const targetWidth = 40
       const paddingLeft = 40
@@ -364,10 +471,14 @@ export default {
     currentSong (newSong, oldSong) {
       if (newSong.id === oldSong.id) return // 防止暂停时切模式自动播放问题
 
-      this.$nextTick(() => {
+      if (this.currentLyric) {
+        this.currentLyric.stop() // 暂停之前 LyricParser 实例
+        console.info('%c Lyric timer has been clean', 'color: dodgerblue')
+      }
+      setTimeout(() => {
         this.$refs.audio.play()
         this.getSongLyric()
-      })
+      }, 1000)
     },
 
     playing (newPlaying) {
@@ -404,6 +515,10 @@ export default {
       'mode',
       'sequenceList'
     ])
+  },
+
+  created () {
+    this.touch = {}
   },
 
   components: {
@@ -519,15 +634,17 @@ export default {
             }
           }
         }
-        .playing-lyric {
+        .playing-lyric-wrapper {
           width: 80%;
           margin: 30px auto 0 auto;
           overflow: hidden;
           text-align: center;
-          height: 20px;
-          line-height: 20px;
-          font-size: $font-size-medium;
-          color: $color-text-l;
+          .playing-lyric {
+            height: 20px;
+            line-height: 20px;
+            font-size: $font-size-medium;
+            color: $color-text-ll;
+          }
         }
       }
       .middle-lyric {
@@ -557,6 +674,22 @@ export default {
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .dot-wrapper {
+        text-align: center;
+        .dot {
+          display: inline-block;
+          margin: 0 4px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: $color-text-l;
+          &.active {
+            width: 20px;
+            border-radius: 4px;
+            background-color: $color-text-ll;
+          }
+        }
+      }
       .progress-wrapper {
         display: flex;
         margin: 0 auto;

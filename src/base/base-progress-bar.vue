@@ -34,7 +34,7 @@ export default {
   methods: {
     progressClick (evt) {
       const rect = this.$refs.progressBar.getBoundingClientRect()
-      console.log(rect)
+      console.info('Click point: %O', rect)
       const offsetWidth = evt.pageX - rect.left
 
       /**
