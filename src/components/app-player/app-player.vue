@@ -1,5 +1,5 @@
 <template>
-  <div class="music-player" v-show="playList.length > 0">
+  <div class="music-player" v-show="playlist.length > 0">
     <!-- @leave="leave" 是与我定义的样式无关，因为删除样式一样 leave-to 类名会卡住 -->
     <transition
       name="normal"
@@ -209,11 +209,11 @@ export default {
     prevSong () {
       if (!this.songReady) { return }
 
-      if (this.playList.length === 1) {
+      if (this.playlist.length === 1) {
         this.loopPlay()
       } else {
         // 因为只能是 mutations 修改 state ，故不能写 this.currentIndex--
-        const index = this.currentIndex === 0 ? this.playList.length - 1 : this.currentIndex - 1
+        const index = this.currentIndex === 0 ? this.playlist.length - 1 : this.currentIndex - 1
         this.setCurrentIndex(index)
       }
       this.fixPlayingStatus()
@@ -224,10 +224,10 @@ export default {
       if (!this.songReady) { return }
       // 原因同 prevSong, this.currentIndex++ 存在赋值行为
 
-      if (this.playList.length === 1) {
+      if (this.playlist.length === 1) {
         this.loopPlay()
       } else {
-        const index = this.currentIndex === this.playList.length - 1 ? 0 : this.currentIndex + 1
+        const index = this.currentIndex === this.playlist.length - 1 ? 0 : this.currentIndex + 1
         this.setCurrentIndex(index)
         this.fixPlayingStatus()
       }
@@ -264,14 +264,14 @@ export default {
         list = this.sequenceList
       }
       this.resetCurrentIndex(list)
-      this.setPlayList(list)
+      this.setPlaylist(list)
       /**
-       * 经试验，playList 的改变不会导致 currentSong 的重新计算（在 watch 中设定一
+       * 经试验，playlist 的改变不会导致 currentSong 的重新计算（在 watch 中设定一
        * 个 console ），currentIndex 会导致触发 watcher ，即 currentSong 会重新计
        * 算。
        */
     },
-    // 保证 playList 改变时不会改变当前播放歌曲
+    // 保证 playlist 改变时不会改变当前播放歌曲
     resetCurrentIndex (list) {
       let index = list.findIndex(item => {
         return item.id === this.currentSong.id
@@ -452,7 +452,7 @@ export default {
       setPlayingState: 'SET_PLAYING_STATE',
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayMode: 'SET_PLAY_MODE',
-      setPlayList: 'SET_PLAYLIST'
+      setPlaylist: 'SET_PLAYLIST'
     })
   },
 
@@ -508,7 +508,7 @@ export default {
 
     ...mapGetters([
       'fullScreen',
-      'playList',
+      'playlist',
       'currentSong',
       'playing',
       'currentIndex',
@@ -761,7 +761,7 @@ export default {
     align-items: center;
     width: 100%;
     height: 60px;
-    background-color: $color-background;
+    background-color: $color-highlight-background;
     &.mini-enter-active, &.mini-leave-active {
       transition: all .4s;
     }

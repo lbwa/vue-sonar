@@ -1,11 +1,11 @@
 <template>
-<div class="recommend">
-  <BaseScroll class="scroll-wrapper" :data="playList">
+<div class="recommend" ref="recommend">
+  <BaseScroll class="scroll-wrapper" :data="songsList" ref="scroll">
     <div>
       <!-- 轮播图 -->
       <div class="slider-wrapper"><!-- 仅做 dots 定位的参照物 -->
-      <!-- v-if="recommendList.length" 用于在返回数据后再渲染子组件，否则初始化传入初始值空数组，将导致子组件报错 -->
-        <BaseSlider v-if="recommendList.length" :sliderData="recommendList" :interval="3000"></BaseSlider>
+      <!-- v-if="sliderList.length" 用于在返回数据后再渲染子组件，否则初始化传入初始值空数组，将导致子组件报错 -->
+        <BaseSlider v-if="sliderList.length" :sliderData="sliderList" :interval="3000"></BaseSlider>
       </div>
       <!-- 推荐列表 -->
       <div class="recommend-list">
@@ -13,7 +13,7 @@
         <ul>
           <li
             class="recommend-item"
-            v-for="(item, index) of playList"
+            v-for="(item, index) of songsList"
             :key="index"
             @click="showListDetail"
           >
@@ -30,7 +30,7 @@
       </div>
     </div>
     <!-- 加载中提示 -->
-    <div class="loading-container" v-show="!playList.length">
+    <div class="loading-container" v-show="!songsList.length">
       <BaseLoading/>
     </div>
   </BaseScroll>
@@ -38,22 +38,31 @@
 </template>
 
 <script>
-import { getRecommend, getPlayList } from '@/api/the-recommend'
+import { getRecommend, getPlaylist } from '@/api/the-recommend'
 import { ERR_OK } from 'api/config'
 import BaseSlider from 'base/base-slider'
 import BaseScroll from 'base/base-scroll'
 import BaseLoading from 'base/base-loading/base-loading'
+import { playlistMixin } from 'common/js/mixin'
 
 export default {
+  mixins: [playlistMixin],
   data () {
     return {
-      recommendList: [],
-      playList: [],
+      sliderList: [],
+      songsList: [],
       hasShowDetail: false
     }
   },
 
   methods: {
+    handlePlaylist (playlist) { // playlist 出自 mixins
+      const bottom = this.playlist.length > 0 ? '60px' : ''
+
+      this.$refs.recommend.style.bottom = bottom
+      this.$refs.scroll.refresh()
+    },
+
     showListDetail () {
       this.hasShowDetail = !this.hasShowDetail
     },
@@ -61,15 +70,15 @@ export default {
     _getRecommend () {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {
-          this.recommendList = res.data.slider
+          this.sliderList = res.data.slider
         }
       })
     },
 
-    _getPlayList () {
-      getPlayList().then(res => {
+    _getPlaylist () {
+      getPlaylist().then(res => {
         if (res.code === ERR_OK) {
-          this.playList = res.data.list
+          this.songsList = res.data.list
         }
       })
     }
@@ -90,7 +99,7 @@ export default {
 
   created () {
     this._getRecommend()
-    this._getPlayList()
+    this._getPlaylist()
   },
 
   components: {

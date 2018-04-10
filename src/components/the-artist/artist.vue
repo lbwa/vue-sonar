@@ -14,11 +14,13 @@ import { ERR_OK } from 'api/config'
 import BaseArtistList from 'base/base-artist-list'
 import Artist from 'common/js/normalize-artist'
 import { mapMutations } from 'vuex'
+import { playlistMixin } from 'common/js/mixin'
 
 const HOT_NAME = '热门'
 const HOT_ARTIST_LENGTH = 10
 
 export default {
+  mixins: [playlistMixin],
   data () {
     return {
       artistList: []
@@ -93,6 +95,13 @@ export default {
       // path 覆盖 params
       this.$router.push({ path: `/artist/${artist.id}` })
       this.setArtist(artist)
+    },
+
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+
+      this.$refs.artist.style.bottom = bottom
+      this.$refs.artistList.refresh()
     },
 
     ...mapMutations({

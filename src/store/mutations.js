@@ -13,8 +13,8 @@ const mutations = {
     state.fullScreen = fullScreen
   },
 
-  [types.SET_PLAYLIST] (state, playList) {
-    state.playList = playList
+  [types.SET_PLAYLIST] (state, playlist) {
+    state.playlist = playlist
   },
 
   [types.SET_SEQUENCE_LIST] (state, sequenceList) {

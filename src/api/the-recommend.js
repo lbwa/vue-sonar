@@ -13,7 +13,7 @@ export function getRecommend () {
   return jsonp(url, data, options)
 }
 
-export function getPlayList () {
+export function getPlaylist () {
   const data = Object.assign({}, commonParams, { // 将公共参数和个体参数合并
     platform: 'yqq',
     hostUin: 0,

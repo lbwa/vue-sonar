@@ -124,6 +124,10 @@ export default {
       this._scrollTo(anchorIndex)
     },
 
+    refresh () {
+      this.$refs.list.refresh()
+    },
+
     scroll (pos) {
       this.scrollY = pos.y
     },
