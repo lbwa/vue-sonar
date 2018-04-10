@@ -1,4 +1,5 @@
 import 'babel-polyfill' // 必须写在第一位，babel-polyfill 不用引入源码
+import 'common/js/hack-next-tick' // 必须在初始化 vue 之前，详情见文件
 import Vue from 'vue'
 import App from './App'
 import router from './router'
