@@ -23,3 +23,9 @@ export const ARTIST_DETAIL_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_tr
 export const LYRIC_URL = '/api/getLyric'
 
 export const RECOMMEND_ITEM_URL = '/api/getRecommendItem'
+
+// 移动端 ranking-list url
+export const RANKING_LIST = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
+
+// 桌面端 ranking-list url
+// export const RANKING_LIST = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_opt.fcg'
