@@ -27,6 +27,8 @@ export default {
         if (res.code === ERR_OK) {
           this.itemSongs = this._normalizeSongs(res.cdlist[0].songlist)
           console.info('%c Loading recommend songs', 'color: dodgerblue')
+        } else {
+          throw new Error('Check ERR_OK failed')
         }
       })
     },

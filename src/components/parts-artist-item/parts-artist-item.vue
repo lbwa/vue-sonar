@@ -32,8 +32,10 @@ export default {
       }
       getArtistDetail(this.artist.id).then(res => {
         if (res.code === ERR_OK) {
+          this.songs = this._normalizeSongs(res.data.list)
+        } else {
+          throw new Error('Check ERR_OK failed')
         }
-        this.songs = this._normalizeSongs(res.data.list)
       })
     },
 

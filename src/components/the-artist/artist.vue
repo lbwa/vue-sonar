@@ -38,6 +38,8 @@ export default {
       getArtistList().then(res => {
         if (res.code === ERR_OK) {
           this.artistList = this._normalizeArtistList(res.data.list)
+        } else {
+          throw new Error('Check ERR_OK failed')
         }
       })
     },
