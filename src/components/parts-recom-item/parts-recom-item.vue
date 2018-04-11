@@ -1,8 +1,8 @@
 <template>
   <transition name="slide">
     <PartsMusicList
-      :bgImage="recommendItem.imgurl"
-      :title="recommendItem.creator.name"
+      :bgImage="itemBgImage"
+      :title="itemTitle"
     />
   </transition>
 </template>
@@ -10,16 +10,25 @@
 <script>
 import PartsMusicList from 'components/parts-music-list/parts-music-list'
 import { mapGetters } from 'vuex'
-import { getRecommendItem } from 'api/get-recommend-item'
+import { getRecommendItem } from 'api/the-recommend'
+// import { ERR_OK } from 'api/config'
 
 export default {
   methods: {
     _getRecommendItem (id) {
-      console.log(id)
+      console.log(true)
       getRecommendItem(id).then(res => console.log(res))
     }
   },
   computed: {
+    itemTitle () {
+      return this.recommendItem.creator.name
+    },
+
+    itemBgImage () {
+      return this.recommendItem.imgurl
+    },
+
     ...mapGetters([
       'recommendItem'
     ])

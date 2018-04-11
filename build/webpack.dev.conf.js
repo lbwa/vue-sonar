@@ -24,10 +24,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   // these devServer options should be customized in /config/index.js
   devServer: {
     // app 请求 webpack-dev-server 地址
-    // webpack-dev-server 代理发送 ajax 请求
+    // webpack-dev-server 代理发送 ajax 请求(目的是 伪造 headers)
     before (app) {
+      // recommend list
       app.get('/api/getPlayList', (req, res) => {
-        var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+        const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
 
         axios.get(url, {
           headers: {
@@ -42,6 +43,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       })
 
+      // lyric
       app.get('/api/getLyric', (req, res) => {
         const url = `https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg`
 
@@ -56,6 +58,34 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
           if (typeof ret === 'string') {
             const reg = /^\w+\(({[^()]+})\)$/
+            const matches = ret.match(reg)
+
+            if (matches) {
+              ret = JSON.parse(matches[1])
+            }
+          }
+          res.json(ret)
+        }, err => {
+          throw Error(`Proxy failed, ${err}`)
+        })
+      })
+
+      // recommend item
+      app.get('/api/getRecommendItem', (req, res) => {
+        const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+        const query = req.query.disstid
+
+        axios.get(url, {
+          headers: {
+            referer: `https://y.qq.com/n/yqq/playsquare/${query}.html`,
+            host: 'c.y.qq.com'
+          },
+          params: req.query
+        }).then(response => {
+          let ret = response.data
+
+          if (typeof ret === 'string') {
+            const reg = /^\w+\(({.+})\)$/
             const matches = ret.match(reg)
 
             if (matches) {
