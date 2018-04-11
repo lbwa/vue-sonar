@@ -46,10 +46,14 @@ export function getRecommendItem (recommendId) {
     }
   }
 
-  return jsonp(RECOMMEND_ITEM_URL, data, {
-    ...options,
-    // https://github.com/webmodules/jsonp/blob/master/index.js#L50
-    prefix: '', // 回调函数前缀，默认值为 __jp
-    name: 'playlistinfoCallback' // 回调函数名，默认值为从 0 开始的计数器
-  })
+  // return jsonp(RECOMMEND_ITEM_URL, data, {
+  //   ...options,
+  //   // https://github.com/webmodules/jsonp/blob/master/index.js#L50
+  //   prefix: '', // 回调函数前缀，默认值为 __jp
+  //   name: 'playlistinfoCallback' // 回调函数名，默认值为从 0 开始的计数器
+  // })
+
+  return axios.get(RECOMMEND_ITEM_URL, {
+    params: data
+  }).then(res => res.data)
 }

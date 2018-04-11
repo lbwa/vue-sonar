@@ -16,7 +16,6 @@ import { getRecommendItem } from 'api/the-recommend'
 export default {
   methods: {
     _getRecommendItem (id) {
-      console.log(true)
       getRecommendItem(id).then(res => console.log(res))
     }
   },
