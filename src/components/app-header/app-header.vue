@@ -1,5 +1,5 @@
 <template>
-<div class="m-header">
+<div class="app-header">
   <div class="icon"></div>
   <div class="text">Sonar Music</div>
 </div>
@@ -12,7 +12,7 @@ export default {}
 <style lang="scss" scoped>
 @import '~scss/mixin';
 @import '~scss/variables';
-.m-header {
+.app-header {
   position: relative;
   height: 44px;
   text-align: center;

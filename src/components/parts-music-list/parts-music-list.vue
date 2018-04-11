@@ -29,7 +29,7 @@
       :data="songs"
       @scroll="scrollSongsList"
     >
-      <BaseSongList :songsData="songs" @select="selectedSong"/>
+      <BaseSongList :songsData="songs" :showRank="showRank" @select="selectedSong"/>
 
       <div v-if="songs.length === 0" class="loading-wrapper">
         <BaseLoading/>
@@ -40,7 +40,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import BaseSongList from 'base/base-songs-list'
+import BaseSongList from 'base/base-songs-list/base-songs-list'
 import BaseScroll from 'base/base-scroll'
 import BaseLoading from 'base/base-loading/base-loading'
 import { prefixStyle } from 'common/js/control-dom'
@@ -57,15 +57,22 @@ export default {
       type: String,
       default: ''
     },
+
     title: {
       type: String,
       default: ''
     },
+
     songs: {
       type: Array,
       default () {
         return []
       }
+    },
+
+    showRank: {
+      type: Boolean,
+      default: false
     }
   },
 

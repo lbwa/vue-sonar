@@ -1,9 +1,10 @@
 <template>
   <transition name="slide">
     <PartsMusicList
-      :bgImage="selectedTopList.picUrl"
+      :bgImage="songsList.length ? songsList[0].image : ''"
       :title="selectedTopList.topTitle"
-      :songs="songList"
+      :songs="songsList"
+      :showRank="showRank"
     />
   </transition>
 </template>
@@ -18,7 +19,8 @@ import { createSong } from 'common/js/normalize-song'
 export default {
   data () {
     return {
-      songList: [] // 格式化后的歌曲容器
+      songsList: [], // 格式化后的歌曲容器
+      showRank: true
     }
   },
 
@@ -30,7 +32,7 @@ export default {
       }
       getFullRankingList(id).then(res => {
         if (res.code === ERR_OK) {
-          this.songList = this._normalizeSong(res.songlist)
+          this.songsList = this._normalizeSong(res.songlist)
         } else {
           throw new Error('Check ERR_OK failed.')
         }

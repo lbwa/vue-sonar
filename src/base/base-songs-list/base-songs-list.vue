@@ -7,7 +7,9 @@
         :key="index"
         @click="selectedItem(item, index)"
       >
-        <div class="item-rank" v-show="false"></div>
+        <div class="item-rank" v-if="showRank">
+          <span :class="getRank(index)">{{ getRankText(index) }}</span>
+        </div>
         <div class="item-content">
           <h2 class="item-title">{{ item.name }}</h2>
           <p class="item-description">{{ item.artist }} · {{ item.album }}</p>
@@ -25,12 +27,29 @@ export default {
       default () {
         return []
       }
+    },
+
+    showRank: {
+      type: Boolean,
+      default: false
     }
   },
 
   methods: {
     selectedItem (song, index) {
       this.$emit('select', song, index)
+    },
+
+    getRank (index) {
+      if (index <= 2) {
+        return `icon icon${index}`
+      } else {
+        return `text`
+      }
+    },
+
+    getRankText (index) {
+      return index > 2 ? index + 1 : ''
     }
   }
 }
@@ -48,7 +67,29 @@ export default {
     box-sizing: border-box;
     height: 64px;
     .item-rank {
-      flex: 0 0 25px
+      flex: 0 0 25px;
+      width: 25px;
+      margin-right: 30px;
+      text-align: center;
+      .text {
+        color: $color-theme;
+        font-size: $font-size-large;
+      }
+      .icon {
+        display: inline-block;
+        width: 25px;
+        height: 24px;
+        background-size: 25px 24px;
+        &.icon0 {
+          @include bg-img('first')
+        }
+        &.icon1 {
+          @include bg-img('second')
+        }
+        &.icon2 {
+          @include bg-img('third')
+        }
+      }
     }
     .item-content {
       flex: 1;

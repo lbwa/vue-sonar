@@ -48,6 +48,7 @@ export function getRankingList () {
 
 // end
 
+// 以下是请求的桌面版 url（jsonp 请求）
 export function getFullRankingList (id) {
   const data = {
     ...commonParams,
