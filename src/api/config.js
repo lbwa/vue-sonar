@@ -25,7 +25,9 @@ export const LYRIC_URL = '/api/getLyric'
 export const RECOMMEND_ITEM_URL = '/api/getRecommendItem'
 
 // 移动端 ranking-list url
-export const RANKING_LIST = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
+export const RANKING_LIST_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
 
 // 桌面端 ranking-list url
-// export const RANKING_LIST = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_opt.fcg'
+// export const RANKING_LIST_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_opt.fcg'
+
+export const FULL_RANKING_LIST_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg'

@@ -31,6 +31,10 @@ const mutations = {
 
   [types.SET_RECOMMEND_ITEM] (state, recommendItem) {
     state.recommendItem = recommendItem
+  },
+
+  [types.SET_SELECTED_TOPLIST] (state, selectedTopList) {
+    state.selectedTopList = selectedTopList
   }
 }
 

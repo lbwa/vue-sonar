@@ -17,3 +17,5 @@ export const currentSong = state => { // 经试验，修改 playlist 不会导�
 }
 
 export const recommendItem = state => state.recommendItem
+
+export const selectedTopList = state => state.selectedTopList

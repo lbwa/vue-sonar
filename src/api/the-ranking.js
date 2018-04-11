@@ -1,5 +1,7 @@
-import { RANKING_LIST, options } from './config'
+import { RANKING_LIST_URL, FULL_RANKING_LIST_URL, options, commonParams } from './config'
 import jsonp from 'common/js/jsonp'
+
+// start
 
 // 桌面端 toplist jsonp 配置
 
@@ -16,7 +18,7 @@ export function getRankingList () {
     v8debug: 1
   }
 
-  return jsonp(RANKING_LIST, data, {
+  return jsonp(RANKING_LIST_URL, data, {
     ...options,
     prefix: '',
     name: 'jsonCallback'
@@ -43,3 +45,28 @@ export function getRankingList () {
 //     name: 'jsonCallback'
 //   })
 // }
+
+// end
+
+export function getFullRankingList (id) {
+  const data = {
+    ...commonParams,
+    tpl: 3,
+    page: 'detail',
+    // data: 歌单更新日期，
+    topid: id,
+    type: 'top',
+    song_begin: 0,
+    song_num: 30,
+    loginUin: 0,
+    hostUin: 0,
+    platform: 'yqq',
+    needNewCode: 0
+  }
+
+  return jsonp(FULL_RANKING_LIST_URL, data, {
+    ...options,
+    prefix: '',
+    name: 'MusicJsonCallbacktoplist'
+  })
+}

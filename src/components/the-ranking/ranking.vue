@@ -5,6 +5,7 @@
         <li
           class="ranking-item"
           v-for="(list, listIndex) of topList" :key="listIndex"
+          @click="selectList(list)"
         >
           <div class="ranking-icon">
             <img v-lazy="list.picUrl" width="100" height="100" alt="ranking-icon">
@@ -35,6 +36,7 @@ import BaseLoading from 'base/base-loading/base-loading'
 import { getRankingList } from 'api/the-ranking'
 import { ERR_OK } from 'api/config'
 import { playlistMixin } from 'common/js/mixin'
+import { mapMutations } from 'vuex'
 
 export default {
   mixins: [playlistMixin],
@@ -45,12 +47,21 @@ export default {
   },
 
   methods: {
+    selectList (list) {
+      this.selectedTopList(list)
+      this.$router.push({ path: `/ranking/${list.id}` })
+    },
+
     handlePlaylist (playlist) {
       const bottom = this.playlist.length > 0 ? '60px' : ''
 
       this.$refs.list.style.bottom = bottom
       this.$refs.scroll.refresh()
     },
+
+    ...mapMutations({
+      selectedTopList: 'SET_SELECTED_TOPLIST'
+    }),
 
     _getRankingList () {
       getRankingList().then(res => {

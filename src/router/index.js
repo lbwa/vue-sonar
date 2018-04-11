@@ -5,6 +5,7 @@ import RecommendItem from 'components/parts-recom-item/parts-recom-item'
 import Artist from 'components/the-artist/artist'
 import ArtistItem from 'components/parts-artist-item/parts-artist-item'
 import Ranking from 'components/the-ranking/ranking'
+import RankingItem from 'components/parts-ranking-item/parts-ranking-item'
 import Search from 'components/the-search/search'
 
 Vue.use(Router)
@@ -37,7 +38,13 @@ export default new Router({
     },
     {
       path: '/ranking',
-      component: Ranking
+      component: Ranking,
+      children: [
+        {
+          path: ':id',
+          component: RankingItem
+        }
+      ]
     },
     {
       path: '/search',
