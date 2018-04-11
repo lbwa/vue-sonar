@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Recommend from 'components/the-recommend/recommend'
+import RecommendItem from 'components/parts-recom-item/parts-recom-item'
 import Artist from 'components/the-artist/artist'
-import ArtistDetail from 'components/the-artist-detail/the-artist-detail'
+import ArtistItem from 'components/parts-artist-item/parts-artist-item'
 import Ranking from 'components/the-ranking/ranking'
 import Search from 'components/the-search/search'
 
@@ -16,7 +17,13 @@ export default new Router({
     },
     {
       path: '/recommend',
-      component: Recommend
+      component: Recommend,
+      children: [
+        {
+          path: ':id',
+          component: RecommendItem
+        }
+      ]
     },
     {
       path: '/artist',
@@ -24,7 +31,7 @@ export default new Router({
       children: [
         {
           path: ':id',
-          component: ArtistDetail
+          component: ArtistItem
         }
       ]
     },

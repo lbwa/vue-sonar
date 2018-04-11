@@ -15,3 +15,5 @@ export const currentIndex = state => state.currentIndex
 export const currentSong = state => { // 经试验，修改 playlist 不会导致 currentSong 重新计算
   return state.playlist[state.currentIndex] || {}
 }
+
+export const recommendItem = state => state.recommendItem

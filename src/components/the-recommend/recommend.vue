@@ -1,40 +1,41 @@
 <template>
-<div class="recommend" ref="recommend">
-  <BaseScroll class="scroll-wrapper" :data="songsList" ref="scroll">
-    <div>
-      <!-- 轮播图 -->
-      <div class="slider-wrapper"><!-- 仅做 dots 定位的参照物 -->
-      <!-- v-if="sliderList.length" 用于在返回数据后再渲染子组件，否则初始化传入初始值空数组，将导致子组件报错 -->
-        <BaseSlider v-if="sliderList.length" :sliderData="sliderList" :interval="3000"></BaseSlider>
+  <div class="recommend" ref="recommend">
+    <BaseScroll class="scroll-wrapper" :data="songsList" ref="scroll">
+      <div>
+        <!-- 轮播图 -->
+        <div class="slider-wrapper"><!-- 仅做 dots 定位的参照物 -->
+        <!-- v-if="sliderList.length" 用于在返回数据后再渲染子组件，否则初始化传入初始值空数组，将导致子组件报错 -->
+          <BaseSlider v-if="sliderList.length" :sliderData="sliderList" :interval="3000"></BaseSlider>
+        </div>
+        <!-- 推荐列表 -->
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li
+              class="recommend-item"
+              v-for="(item, index) of songsList"
+              :key="index"
+              @click="showListDetail(item)"
+            >
+              <div class="item-avatar">
+                <!-- vue-lazyLoad 列表图像懒加载 -->
+                <img v-lazy="item.imgurl" alt="item-avatar">
+              </div>
+              <div class="item-content">
+                <h2 class="item-name" v-html="item.creator.name"></h2>
+                <p class="item-description" v-html="item.dissname"></p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <!-- 推荐列表 -->
-      <div class="recommend-list">
-        <h1 class="list-title">热门歌单推荐</h1>
-        <ul>
-          <li
-            class="recommend-item"
-            v-for="(item, index) of songsList"
-            :key="index"
-            @click="showListDetail"
-          >
-            <div class="item-avatar">
-              <!-- vue-lazyLoad 列表图像懒加载 -->
-              <img v-lazy="item.imgurl" alt="item-avatar">
-            </div>
-            <div class="item-content">
-              <h2 class="item-name" v-html="item.creator.name"></h2>
-              <p class="item-description" v-html="item.dissname"></p>
-            </div>
-          </li>
-        </ul>
+      <!-- 加载中提示 -->
+      <div class="loading-container" v-show="!songsList.length">
+        <BaseLoading/>
       </div>
-    </div>
-    <!-- 加载中提示 -->
-    <div class="loading-container" v-show="!songsList.length">
-      <BaseLoading/>
-    </div>
-  </BaseScroll>
-</div>
+    </BaseScroll>
+    <router-view/>
+  </div>
 </template>
 
 <script>
@@ -44,14 +45,14 @@ import BaseSlider from 'base/base-slider'
 import BaseScroll from 'base/base-scroll'
 import BaseLoading from 'base/base-loading/base-loading'
 import { playlistMixin } from 'common/js/mixin'
+import { mapMutations } from 'vuex'
 
 export default {
   mixins: [playlistMixin],
   data () {
     return {
       sliderList: [],
-      songsList: [],
-      hasShowDetail: false
+      songsList: []
     }
   },
 
@@ -63,9 +64,14 @@ export default {
       this.$refs.scroll.refresh()
     },
 
-    showListDetail () {
-      this.hasShowDetail = !this.hasShowDetail
+    showListDetail (item) {
+      this.setRecommendItem(item)
+      this.$router.push({path: `/recommend/${item.dissid}`})
     },
+
+    ...mapMutations({
+      setRecommendItem: 'SET_RECOMMEND_ITEM'
+    }),
 
     _getRecommend () {
       getRecommend().then(res => {

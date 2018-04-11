@@ -21,3 +21,5 @@ export const ARTIST_URL = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg'
 export const ARTIST_DETAIL_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
 
 export const LYRIC_URL = '/api/getLyric'
+
+export const RECOMMEND_ITEM_URL = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
