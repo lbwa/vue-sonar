@@ -1,6 +1,6 @@
 <template>
   <div class="ranking-list">
-    <BaseScroll  class="list-wrapper">
+    <BaseScroll  class="list-wrapper" :data="topList" v-show="topList.length > 0">
       <ul>
         <li
           class="ranking-item"
@@ -24,11 +24,13 @@
         </li>
       </ul>
     </BaseScroll>
+    <BaseLoading v-show="topList.length === 0"/>
   </div>
 </template>
 
 <script>
 import BaseScroll from 'base/base-scroll'
+import BaseLoading from 'base/base-loading/base-loading'
 import { getRankingList } from 'api/the-ranking'
 import { ERR_OK } from 'api/config'
 
@@ -54,7 +56,8 @@ export default {
   },
 
   components: {
-    BaseScroll
+    BaseScroll,
+    BaseLoading
   }
 }
 </script>
@@ -105,6 +108,11 @@ export default {
         line-height: 26px;
       }
     }
+  }
+  .loading {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 </style>
