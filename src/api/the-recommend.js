@@ -46,6 +46,7 @@ export function getRecommendItem (recommendId) {
     }
   }
 
+  // 在没有 header 验证的情况下直接使用 jsonp 请求 url，否则使用后端 ajax 代理
   // return jsonp(RECOMMEND_ITEM_URL, data, {
   //   ...options,
   //   // https://github.com/webmodules/jsonp/blob/master/index.js#L50
