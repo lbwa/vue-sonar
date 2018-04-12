@@ -28,6 +28,19 @@ export default {
   },
 
   methods: {
+    selectArtist (artist) {
+      // path 覆盖 params
+      this.$router.push({ path: `/artist/${artist.id}` })
+      this.setArtist(artist)
+    },
+
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+
+      this.$refs.artist.style.bottom = bottom
+      this.$refs.artistList.refresh()
+    },
+
     // handlePlayList (playlist) {
     //   const bottom = playlist.length > 0 ? '60px' : ''
     //   this.$refs.artist.style.bottom = bottom
@@ -91,19 +104,6 @@ export default {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0)
       })
       return [...hot, ...ret, ...other]
-    },
-
-    selectArtist (artist) {
-      // path 覆盖 params
-      this.$router.push({ path: `/artist/${artist.id}` })
-      this.setArtist(artist)
-    },
-
-    handlePlaylist (playlist) {
-      const bottom = playlist.length > 0 ? '60px' : ''
-
-      this.$refs.artist.style.bottom = bottom
-      this.$refs.artistList.refresh()
     },
 
     ...mapMutations({

@@ -6,7 +6,12 @@
     @scrollToEnd="searchMore"
   >
     <ul class="result-list">
-      <li class="result-item" v-for="(item, index) of searchResult" :key="index">
+      <li
+        class="result-item"
+        v-for="(item, index) of searchResult"
+        :key="index"
+        @click="selectItem(item)"
+      >
         <div class="item-icon">
           <i :class="getIconClass(item)"></i>
         </div>
@@ -14,8 +19,9 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
-      <!-- <BaseLoading v-show="hasMore"/> -->
+      <BaseLoading v-show="hasMore" title=""/>
     </ul>
+    <router-view/>
   </BaseScroll>
 </template>
 
@@ -25,6 +31,8 @@ import BaseLoading from 'base/base-loading/base-loading'
 import { searchKey } from 'api/the-search'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/normalize-song'
+import { mapMutations, mapActions } from 'vuex'
+import Artist from 'common/js/normalize-artist'
 
 const TYPE_SINGER = 'singer'
 const PER_PAGE = 20 // 每一页的结果总数
@@ -33,8 +41,7 @@ export default {
   props: {
     query: {
       type: String,
-      default: '',
-      hasMore: true // 是否还有数据未请求
+      default: ''
     },
 
     showArtist: {
@@ -47,11 +54,26 @@ export default {
     return {
       page: 1,
       searchResult: [],
+      hasMore: true, // 是否还有数据未请求
       pullUp: true
     }
   },
 
   methods: {
+    selectItem (item) {
+      if (item.type === TYPE_SINGER) {
+        const artist = new Artist({
+          id: item.singermid,
+          name: item.singername
+        })
+
+        this.setArtist(artist)
+        this.$router.push({ path: `/search/${artist.id}` })
+      } else {
+        this.insertSong(item)
+      }
+    },
+
     searchMore () {
       if (!this.hasMore) return
 
@@ -84,7 +106,7 @@ export default {
     },
 
     search () {
-      this.page = 1
+      this.page = 1 // 未清空输入框就再次执行搜索
       this.hasMore = true
       this.$refs.scroll.scrollTo(0, 0)
       searchKey(this.query, this.page, this.showArtist, PER_PAGE).then(res => {
@@ -131,7 +153,15 @@ export default {
       })
 
       return ret
-    }
+    },
+
+    ...mapMutations({
+      setArtist: 'SET_ARTIST'
+    }),
+
+    ...mapActions([
+      'insertSong'
+    ])
   },
 
   watch: {
