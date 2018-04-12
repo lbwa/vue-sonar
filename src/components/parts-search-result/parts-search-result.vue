@@ -1,8 +1,9 @@
 <template>
   <BaseScroll
     class="search-result-wrapper"
+    ref="scroll"
     :data="searchResult" :pullUp="pullUp"
-    @scrollToEnd="scrollToEnd"
+    @scrollToEnd="searchMore"
   >
     <ul class="result-list">
       <li class="result-item" v-for="(item, index) of searchResult" :key="index">
@@ -13,24 +14,27 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
+      <!-- <BaseLoading v-show="hasMore"/> -->
     </ul>
   </BaseScroll>
 </template>
 
 <script>
 import BaseScroll from 'base/base-scroll'
+import BaseLoading from 'base/base-loading/base-loading'
 import { searchKey } from 'api/the-search'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/normalize-song'
 
 const TYPE_SINGER = 'singer'
-let timer = 0
+const PER_PAGE = 20 // 每一页的结果总数
 
 export default {
   props: {
     query: {
       type: String,
-      default: ''
+      default: '',
+      hasMore: true // 是否还有数据未请求
     },
 
     showArtist: {
@@ -48,9 +52,19 @@ export default {
   },
 
   methods: {
-    scrollToEnd () {
+    searchMore () {
+      if (!this.hasMore) return
+
       this.page++
-      this.search()
+      searchKey(this.query, this.page, this.showArtist, PER_PAGE).then(res => {
+        if (res.code === ERR_OK) {
+          // / 合并 searchResult
+          this.searchResult = [...this.searchResult, ...this._normalizeResult(res.data)]
+          this._checkMore(res.data)
+        } else {
+          throw new Error('Check ERR_OK failed')
+        }
+      })
     },
 
     getDisplayName (item) {
@@ -70,13 +84,26 @@ export default {
     },
 
     search () {
-      searchKey(this.query, this.page, this.showArtist).then(res => {
+      this.page = 1
+      this.hasMore = true
+      this.$refs.scroll.scrollTo(0, 0)
+      searchKey(this.query, this.page, this.showArtist, PER_PAGE).then(res => {
         if (res.code === ERR_OK) {
-          this.searchResult = [...this.searchResult, ...this._normalizeResult(res.data)]
+          // 重置 searchResult
+          this.searchResult = this._normalizeResult(res.data)
+          this._checkMore(res.data)
         } else {
           throw new Error('Check ERR_OK failed')
         }
       })
+    },
+
+    _checkMore (data) {
+      const song = data.song
+
+      if (!song.list.length || (song.curnum + song.curpage * PER_PAGE) >= song.totalnum) {
+        this.hasMore = false
+      }
     },
 
     _normalizeResult (data) {
@@ -110,23 +137,18 @@ export default {
   watch: {
     query (newQuery) {
       if (!newQuery) { // 清空输入框时不请求，且初始化组件数据对象
-        this.page = 0
+        this.page = 1
         this.searchResult = []
         return
       }
 
-      if (timer) {
-        clearTimeout(timer)
-        timer = 0
-      }
-      timer = setTimeout(() => {
-        this.search()
-      }, 100)
+      this.search()
     }
   },
 
   components: {
-    BaseScroll
+    BaseScroll,
+    BaseLoading
   }
 }
 </script>

@@ -15,12 +15,14 @@ export function getHotKey () {
   return jsonp(HOTKEY_URL, data, options)
 }
 
-export function searchKey (key, page, zhida) {
+export function searchKey (key, page, zhida, perPage) {
   const data = {
     ...commonParams,
     w: key,
     p: page, // 第几页
     catZhida: zhida ? 1 : 0, // 是否解锁显示歌手
+    perpage: perPage, // 每次返回的结果长度（每页结果数）
+    n: perPage,
     uin: 0,
     format: 'json',
     platform: 'yqq',
@@ -31,8 +33,6 @@ export function searchKey (key, page, zhida) {
     ie: 'utf-8',
     sem: 1,
     aggr: 0,
-    perpage: 20,
-    n: 20,
     remoteplace: 'txt.mqq.all',
     _: +new Date()
   }
