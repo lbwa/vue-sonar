@@ -10,6 +10,8 @@ export const options = {
   param: 'jsonpCallback'
 }
 
+// 部分 ajax 接口接受 jsonp 请求
+
 export const ERR_OK = 0
 
 export const RECOMMEND_URL = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
@@ -32,3 +34,5 @@ export const RANKING_LIST_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.
 
 // 桌面端 url（jsonp 请求），若是移动端则是 ajax 请求
 export const FULL_RANKING_LIST_URL = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg'
+
+export const HOTKEY_URL = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg'
