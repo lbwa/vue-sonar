@@ -97,6 +97,22 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           throw Error(`Proxy failed, ${err}`)
         })
       })
+
+      // search
+      app.get('/api/search', (req, res) => {
+        const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.y.qq.com/'
+          },
+          params: req.query
+        }).then(response => {
+          res.json(response.data)
+        }, err => {
+          throw Error(`Proxy failed, ${err}`)
+        })
+      })
     },
 
     clientLogLevel: 'warning',

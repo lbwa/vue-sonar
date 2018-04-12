@@ -18,6 +18,10 @@ export default {
   methods: {
     cleanInputBox () {
       this.query = ''
+    },
+
+    setQuery (query) {
+      this.query = query
     }
   },
 
