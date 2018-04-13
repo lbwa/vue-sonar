@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import { debounce } from 'common/js/util'
+
 export default {
   props: {
     placeholder: {
@@ -26,9 +28,9 @@ export default {
   },
 
   created () {
-    this.$watch('query', newQuery => {
+    this.$watch('query', debounce(newQuery => {
       this.$emit('queryChange', newQuery)
-    })
+    }, 200))
   },
 
   data () {

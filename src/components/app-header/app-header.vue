@@ -25,7 +25,7 @@ export default {}
     width: 30px;
     height: 32px;
     @include bg-img('logo');
-    background-size: 30px 32px;
+    background-size: 30px 30px;
   }
   .text {
     display: inline-block;

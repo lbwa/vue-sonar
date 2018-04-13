@@ -21,13 +21,17 @@
       </li>
       <BaseLoading v-show="hasMore" title=""/>
     </ul>
-    <router-view/>
+
+    <div class="no-result-wrapper" v-show="!hasMore && !searchResult.length">
+      <BaseNoResult title="抱歉，暂无搜索结果"/>
+    </div>
   </BaseScroll>
 </template>
 
 <script>
 import BaseScroll from 'base/base-scroll'
 import BaseLoading from 'base/base-loading/base-loading'
+import BaseNoResult from 'base/base-no-result/base-no-result'
 import { searchKey } from 'api/the-search'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/normalize-song'
@@ -178,7 +182,8 @@ export default {
 
   components: {
     BaseScroll,
-    BaseLoading
+    BaseLoading,
+    BaseNoResult
   }
 }
 </script>
@@ -218,6 +223,12 @@ export default {
         }
       }
     }
+  }
+  .no-result-wrapper {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-90%);
   }
 }
 

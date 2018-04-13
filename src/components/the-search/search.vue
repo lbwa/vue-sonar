@@ -25,6 +25,7 @@
   </div>
 
   <PartsResult :query="queryKey" v-show="queryKey"/>
+  <router-view/>
 </div>
 </template>
 
