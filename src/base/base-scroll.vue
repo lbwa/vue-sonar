@@ -31,6 +31,11 @@ export default {
     pullUp: { // 是否开启上拉刷新
       type: Boolean,
       default: false
+    },
+
+    beforeScroll: { // 用于移动端 input 失焦时机的判断，以在滚动时收起键盘
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -53,6 +58,12 @@ export default {
           if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
             this.$emit('scrollToEnd') // 派发滚动到达底部事件
           }
+        })
+      }
+
+      if (this.beforeScroll) {
+        this.scroll.on('beforeScrollStart', () => {
+          this.$emit('beforeScroll')
         })
       }
     },

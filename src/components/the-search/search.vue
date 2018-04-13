@@ -21,19 +21,36 @@
           </li>
         </ul>
       </div>
+
+      <div class="search-history" v-show="searchHistory.length">
+        <h1 class="title">
+          <span class="text">搜索历史</span>
+          <span class="clear-btn">
+            <i class="icon-clear"></i>
+          </span>
+        </h1>
+        <BaseSearchList :searchData="searchHistory" @selectItem="selectItem"/>
+      </div>
     </div>
   </div>
 
-  <PartsResult :query="queryKey" v-show="queryKey"/>
+  <PartsResult
+    @listScrolling="blurInputBox"
+    @selectQuery="saveSearchData"
+    :query="queryKey"
+    v-show="queryKey"
+  />
   <router-view/>
 </div>
 </template>
 
 <script>
 import BaseSearchBox from 'base/base-search-box'
+import BaseSearchList from 'base/base-search-list'
 import PartsResult from 'components/parts-search-result/parts-search-result'
 import { getHotKey } from 'api/the-search'
 import { ERR_OK } from 'api/config'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -44,7 +61,25 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
+
   methods: {
+    selectItem (item) {
+      this.$refs.searchBox.setQuery(item)
+    },
+
+    saveSearchData () {
+      this.saveSearchHistory(this.queryKey)
+    },
+
+    blurInputBox () {
+      this.$refs.searchBox.blurInputBar()
+    },
+
     queryChange (query) {
       this.queryKey = query
     },
@@ -66,7 +101,11 @@ export default {
           this.hotKey = res.data.hotkey.slice(0, 10)
         }
       })
-    }
+    },
+
+    ...mapActions([
+      'saveSearchHistory'
+    ])
   },
 
   created () {
@@ -75,6 +114,7 @@ export default {
 
   components: {
     BaseSearchBox,
+    BaseSearchList,
     PartsResult
   }
 }
@@ -84,6 +124,7 @@ export default {
 @import '~scss/variables';
 
 .search {
+  font-size: 0;
   .search-box-wrapper {
     margin: 20px;
   }
@@ -110,6 +151,25 @@ export default {
           background-color: $color-highlight-background;
           font-size: $font-size-medium;
           color: $color-text-d;
+        }
+      }
+      .search-history {
+        padding: 0 20px;
+        color: $color-text-l;
+        .title {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          font-size: $font-size-medium;
+          .text {
+            flex: 1;
+            text-align: left;
+          }
+          .clear-btn {
+            flex: 1;
+            text-align: right;
+            color: $color-text-d;
+          }
         }
       }
     }

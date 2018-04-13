@@ -2,8 +2,9 @@
   <BaseScroll
     class="search-result-wrapper"
     ref="scroll"
-    :data="searchResult" :pullUp="pullUp"
+    :data="searchResult" :pullUp="pullUp" :beforeScroll="beforeScroll"
     @scrollToEnd="searchMore"
+    @beforeScroll="listScrolling"
   >
     <ul class="result-list">
       <li
@@ -59,11 +60,16 @@ export default {
       page: 1,
       searchResult: [],
       hasMore: true, // 是否还有数据未请求
-      pullUp: true
+      pullUp: true,
+      beforeScroll: true // 用于移动端 input 失焦时机的判断，以在滚动时收起键盘
     }
   },
 
   methods: {
+    listScrolling () {
+      this.$emit('listScrolling')
+    },
+
     selectItem (item) {
       if (item.type === TYPE_SINGER) {
         const artist = new Artist({
@@ -76,6 +82,9 @@ export default {
       } else {
         this.insertSong(item)
       }
+
+      // 保存历史记录并不是本组件的职责
+      this.$emit('selectQuery')
     },
 
     searchMore () {

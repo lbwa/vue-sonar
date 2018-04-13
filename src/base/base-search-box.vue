@@ -1,7 +1,7 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input type="text" v-model="query" class="input-box" :placeholder="placeholder">
+    <input type="text" v-model="query" class="input-box" ref="inputBox" :placeholder="placeholder">
     <i class="icon-dismiss" v-show="query" @click="cleanInputBox"></i>
   </div>
 </template>
@@ -18,6 +18,10 @@ export default {
   },
 
   methods: {
+    blurInputBar () {
+      this.$refs.inputBox.blur()
+    },
+
     cleanInputBox () {
       this.query = ''
     },

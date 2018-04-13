@@ -33,8 +33,12 @@ const mutations = {
     state.recommendItem = recommendItem
   },
 
-  [types.SET_SELECTED_TOPLIST] (state, selectedTopList) {
+  [types.SET_SELECTED_TOP_LIST] (state, selectedTopList) {
     state.selectedTopList = selectedTopList
+  },
+
+  [types.SET_SEARCH_HISTORY] (state, searchHistory) {
+    state.searchHistory = searchHistory
   }
 }
 

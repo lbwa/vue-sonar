@@ -3,12 +3,15 @@
 import * as types from './mutation-types'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
+import { saveSearch } from 'common/js/cache'
 
 function findIndex (list, song) {
   return list.findIndex(item => {
     return item.id === song.id
   })
 }
+
+// 歌单（主页，歌手，排行榜）中点击歌曲播放整个歌单
 
 export const selectedPlay = ({ commit, state }, { list, index }) => {
   commit(types.SET_SEQUENCE_LIST, list)
@@ -36,6 +39,8 @@ export const randomPlay = ({ commit }, { list }) => {
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
 }
+
+// 搜索页点击歌曲插入播放列表中
 
 export const insertSong = ({ commit, state }, song) => {
   /**
@@ -90,4 +95,8 @@ export const insertSong = ({ commit, state }, song) => {
   commit(types.SET_CURRENT_INDEX, currentIndex)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
+}
+
+export const saveSearchHistory = function ({ commit }, query) {
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query))
 }

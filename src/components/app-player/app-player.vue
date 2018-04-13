@@ -407,6 +407,7 @@ export default {
           offsetWidth = -window.innerWidth
           offsetOpacity = 0
           this.currentShow = 'lyric'
+          this.touch.percent = 1 // touch 容器中的 percent 要处在正确的位置
         } else {
           offsetWidth = 0
           offsetOpacity = 1
@@ -416,6 +417,7 @@ export default {
           offsetWidth = 0
           offsetOpacity = 1
           this.currentShow = 'cd'
+          this.touch.percent = 0 // touch 容器中的 percent 要处在正确的位置
         } else {
           offsetWidth = -window.innerWidth
           offsetOpacity = 0
@@ -559,6 +561,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 150;
     background-color: $color-background;
     .background {
       position: absolute;
@@ -761,6 +764,7 @@ export default {
     align-items: center;
     width: 100%;
     height: 60px;
+    z-index: 180;
     background-color: $color-highlight-background;
     &.mini-enter-active, &.mini-leave-active {
       transition: all .4s;

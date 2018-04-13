@@ -60,7 +60,7 @@ export default {
     },
 
     ...mapMutations({
-      selectedTopList: 'SET_SELECTED_TOPLIST'
+      selectedTopList: 'SET_SELECTED_TOP_LIST'
     }),
 
     _getRankingList () {
