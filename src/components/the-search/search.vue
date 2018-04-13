@@ -15,7 +15,7 @@
             class="hot-key-item"
             v-for="(key, index) of hotKey"
             :key="index"
-            @click="selectHotKey(key.k)"
+            @click="selectQueryRecord(key.k)"
           >
             <span>{{ key.k }}</span>
           </li>
@@ -25,18 +25,22 @@
       <div class="search-history" v-show="searchHistory.length">
         <h1 class="title">
           <span class="text">搜索历史</span>
-          <span class="clear-btn">
+          <span class="clear-btn" @click.stop="clearAllHistory">
             <i class="icon-clear"></i>
           </span>
         </h1>
-        <BaseSearchList :searchData="searchHistory" @selectItem="selectItem"/>
+        <BaseSearchList
+          :searchData="searchHistory"
+          @selectItem="selectQueryRecord"
+          @deleteItem="deleteSearchHistory"
+        />
       </div>
     </div>
   </div>
 
   <PartsResult
     @listScrolling="blurInputBox"
-    @selectQuery="saveSearchData"
+    @selectQuery="saveSearchItem"
     :query="queryKey"
     v-show="queryKey"
   />
@@ -68,11 +72,7 @@ export default {
   },
 
   methods: {
-    selectItem (item) {
-      this.$refs.searchBox.setQuery(item)
-    },
-
-    saveSearchData () {
+    saveSearchItem () {
       this.saveSearchHistory(this.queryKey)
     },
 
@@ -84,7 +84,7 @@ export default {
       this.queryKey = query
     },
 
-    selectHotKey (item) {
+    selectQueryRecord (item) {
       /**
        * 调用子组件方法传值的优势在于:
        * 1. 不用设置不必要的 props 和 watch
@@ -104,7 +104,9 @@ export default {
     },
 
     ...mapActions([
-      'saveSearchHistory'
+      'saveSearchHistory',
+      'deleteSearchHistory', // 自动传入载荷
+      'clearAllHistory'
     ])
   },
 

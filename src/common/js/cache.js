@@ -4,15 +4,10 @@
 
 import localStorage from 'store/dist/store.modern'
 
-// import localforage from 'localforage'
-// 指定 localforage 库的存储驱动，该处为 localStorage，待选 WebSQL 和 IndexedDB
-
-// localforage.setDriver(localforage.LOCALSTORAGE)
-
 const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LENGTH = 15
 
-function insertArray (arr, value, compare, maxLength) {
+function insertItem (arr, value, compare, maxLength) {
   const index = arr.findIndex(compare)
 
   if (index === 0) { // 若是第一个数据
@@ -30,28 +25,20 @@ function insertArray (arr, value, compare, maxLength) {
   }
 }
 
-// localforage 异步存储 search data
+function deleteItem (arr, compare) {
+  const index = arr.findIndex(compare)
 
-// export async function saveSearch (query) {
-//   let searches = []
+  if (index >= 0) {
+    arr.splice(index, 1)
+  }
+}
 
-//   await localforage.getItem(SEARCH_KEY).then(value => {
-//     searches = value || []
-//   })
+// export function
 
-//   insertArray(searches, query, item => {
-//     return item === query
-//   }, SEARCH_MAX_LENGTH)
-
-//   await localforage.setItem(SEARCH_KEY, searches)
-
-//   return searches
-// }
-
-export function saveSearch (query) {
+export function saveSearchItem (query) {
   let searches = localStorage.get(SEARCH_KEY) || []
 
-  insertArray(searches, query, item => {
+  insertItem(searches, query, item => {
     return item === query
   }, SEARCH_MAX_LENGTH)
 
@@ -62,3 +49,45 @@ export function saveSearch (query) {
 export function loadSearchData () {
   return localStorage.get(SEARCH_KEY) || []
 }
+
+export function deleteSearchItem (query) {
+  let searches = localStorage.get(SEARCH_KEY)
+
+  deleteItem(searches, item => {
+    return item === query
+  })
+
+  localStorage.set(SEARCH_KEY, searches)
+
+  return searches
+}
+
+export function deleteAllSearchItem () {
+  localStorage.remove(SEARCH_KEY)
+  return []
+}
+
+/**
+ * 1. localforage 异步存储 search data
+ * 2. localforage 库可指定存储驱动，默认优先级为 IndexedDB、WebSQL、localStorage
+ */
+
+// import localforage from 'localforage'
+
+// localforage.setDriver(localforage.LOCALSTORAGE)
+
+// export async function saveSearch (query) {
+//   let searches = []
+
+//   await localforage.getItem(SEARCH_KEY).then(value => {
+//     searches = value || []
+//   })
+
+//   insertItem(searches, query, item => {
+//     return item === query
+//   }, SEARCH_MAX_LENGTH)
+
+//   await localforage.setItem(SEARCH_KEY, searches)
+
+//   return searches
+// }

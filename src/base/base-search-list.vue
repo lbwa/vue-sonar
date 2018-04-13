@@ -8,7 +8,7 @@
         @click="selectItem(item)"
       >
         <span class="text">{{ item }}</span>
-        <div class="icon" @click.stop="deleteItem">
+        <div class="icon" @click.stop="deleteItem(item)">
           <i class="icon-close"></i>
         </div>
       </li>
