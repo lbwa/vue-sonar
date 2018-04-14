@@ -1,6 +1,13 @@
 // localStorage 仓库
 
-// localforage 库是异步本地储存的，因异步读取机制， state 中无法得到 localStorage 正确的值，故弃用，转而使用 store.js 进行同步存储和读取数据
+/**
+ * 弃用 localforage 原因：
+ * 1. localforage 库是异步本地储存的，因异步读取机制。
+ * 2. 除非将整个 state 对象包裹在异步函数中，否则 state 中依赖 localStorage 的值属性
+ * 无法异步被赋值为 localStorage 的值，故弃用，转而使用 store.js 进行同步存储和读取数
+ * 据
+ * 3. 个人认为将 state 包裹在回调中略丑陋，不够简洁
+ */
 
 import localStorage from 'store/dist/store.modern'
 
