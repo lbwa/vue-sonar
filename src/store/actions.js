@@ -108,12 +108,3 @@ export const deleteSearchHistory = function ({ commit }, query) {
 export const clearAllHistory = function ({ commit }) {
   commit(types.SET_SEARCH_HISTORY, deleteAllSearchItem())
 }
-
-export const resetPlayStatus = function ({ commit }) {
-  commit(types.SET_PLAY_MODE, playMode.sequence)
-  commit(types.SET_SEQUENCE_LIST, [])
-  commit(types.SET_PLAYLIST, [])
-  commit(types.SET_CURRENT_INDEX, 0)
-  commit(types.SET_FULL_SCREEN, false)
-  commit(types.SET_PLAYING_STATE, false)
-}

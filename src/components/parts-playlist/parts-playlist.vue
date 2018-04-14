@@ -1,7 +1,7 @@
 <template>
   <transition name="list-fade">
-    <div class="playlist" v-show="hasShowPlaylist" @click="closePlaylist">
-      <div class="list-wrapper" @click.stop>
+    <div class="playlist" v-show="hasShowPlaylist" @click.self="closePlaylist">
+      <div class="list-wrapper">
 
         <div class="list-header">
           <h1 class="title">
@@ -13,12 +13,13 @@
           </h1>
         </div>
 
-        <BaseScroll class="list-content" :data="playlist">
+        <BaseScroll class="list-content" :data="sequenceList">
           <ul>
             <li
               class="content-item"
-              v-for="(song, index) of playlist"
+              v-for="(song, index) of sequenceList"
               :key="index"
+              @click="selectItem(song, index)"
             >
               <i class="current"></i>
               <span class="item-text">{{ song.name }}</span>
@@ -58,7 +59,7 @@
 <script>
 import BaseScroll from 'base/base-scroll'
 import BaseConfirm from 'base/base-confirm'
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { shuffle } from 'common/js/util'
 import { playMode } from 'common/js/config'
 
@@ -70,9 +71,18 @@ export default {
   },
 
   methods: {
+    selectItem (song, index) {
+      if (this.mode === playMode.random) {
+        index = this.playlist.findIndex(item => {
+          return song.id === item.id
+        })
+      }
+      this.setCurrentIndex(index)
+      this.setPlayingState(true)
+    },
+
     cleanPlaylist () {
       // TODO:
-      // this.resetPlayStatus()
     },
 
     showConfirm () {
@@ -113,12 +123,9 @@ export default {
     ...mapMutations({
       setPlayMode: 'SET_PLAY_MODE',
       setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlaylist: 'SET_PLAYLIST'
-    }),
-
-    ...mapActions([
-      'resetPlayStatus'
-    ])
+      setPlaylist: 'SET_PLAYLIST',
+      setPlayingState: 'SET_PLAYING_STATE'
+    })
   },
 
   computed: {
