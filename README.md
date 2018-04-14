@@ -3,7 +3,6 @@
 
 > A Vue.js music player
 
-[Online demo / 在线 Demo][demo]
 ## Build Setup
 
 ``` bash

@@ -127,11 +127,14 @@
           </BaseProgressCircle>
         </div>
 
-        <div class="mini-play-list">
+        <div class="mini-play-list" @click.stop="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+
+    <PartsPlaylist ref="playlist"/>
+
     <!-- w3c audio:canplay 事件在资源可播放时触发 -->
     <audio
       ref="audio"
@@ -142,15 +145,16 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
-import animations from 'create-keyframe-animation'
-import { prefixStyle } from 'common/js/control-dom'
+import BaseScroll from 'base/base-scroll'
 import BaseProgressBar from 'base/base-progress-bar'
 import BaseProgressCircle from 'base/base-progress-circle'
+import PartsPlaylist from 'components/parts-playlist/parts-playlist'
+import { mapGetters, mapMutations } from 'vuex'
+import { prefixStyle } from 'common/js/control-dom'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
+import animations from 'create-keyframe-animation'
 import LyricParser from 'lyric-parser'
-import BaseScroll from 'base/base-scroll'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
@@ -197,6 +201,10 @@ export default {
 
     openFullScreen () {
       this.setFullScreen(true)
+    },
+
+    showPlaylist () {
+      this.$refs.playlist.showPlaylist()
     },
 
     // 修复暂停时，点击下一曲或上一曲的错误显示
@@ -526,7 +534,8 @@ export default {
   components: {
     BaseProgressBar,
     BaseProgressCircle,
-    BaseScroll
+    BaseScroll,
+    PartsPlaylist
   }
 }
 </script>
