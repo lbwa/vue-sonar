@@ -25,7 +25,7 @@
       <div class="search-history" v-show="searchHistory.length">
         <h1 class="title">
           <span class="text">搜索历史</span>
-          <span class="clear-btn" @click.stop="clearAllHistory">
+          <span class="clear-btn" @click.stop="showConfirmBtn">
             <i class="icon-clear"></i>
           </span>
         </h1>
@@ -44,6 +44,15 @@
     :query="queryKey"
     v-show="queryKey"
   />
+
+  <BaseConfirm
+    ref="confirm"
+    title="是否清空所有搜索历史"
+    confirmBtnText="清空"
+    @confirmSubmit="clearAllHistory"
+  />
+  <!-- 可监听 confirmCancel 事件用于统计逻辑 -->
+
   <router-view/>
 </div>
 </template>
@@ -51,6 +60,7 @@
 <script>
 import BaseSearchBox from 'base/base-search-box'
 import BaseSearchList from 'base/base-search-list'
+import BaseConfirm from 'base/base-confirm'
 import PartsResult from 'components/parts-search-result/parts-search-result'
 import { getHotKey } from 'api/the-search'
 import { ERR_OK } from 'api/config'
@@ -72,6 +82,10 @@ export default {
   },
 
   methods: {
+    showConfirmBtn () {
+      this.$refs.confirm.showConfirm()
+    },
+
     saveSearchItem () {
       this.saveSearchHistory(this.queryKey)
     },
@@ -117,6 +131,7 @@ export default {
   components: {
     BaseSearchBox,
     BaseSearchList,
+    BaseConfirm,
     PartsResult
   }
 }
