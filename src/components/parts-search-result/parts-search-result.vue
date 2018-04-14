@@ -20,7 +20,7 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
-      <BaseLoading v-show="hasMore" title=""/>
+      <BaseLoading v-show="hasMore" title="加载中..."/>
     </ul>
 
     <div class="no-result-wrapper" v-show="!hasMore && !searchResult.length">
@@ -66,6 +66,10 @@ export default {
   },
 
   methods: {
+    refreshScroll () {
+      this.$refs.scroll.refresh()
+    },
+
     listScrolling () {
       this.$emit('listScrolling')
     },

@@ -6,7 +6,7 @@
  * 2. 除非将整个 state 对象包裹在异步函数中，否则 state 中依赖 localStorage 的值属性
  * 无法异步被赋值为 localStorage 的值，故弃用，转而使用 store.js 进行同步存储和读取数
  * 据
- * 3. 个人认为将 state 包裹在回调中略丑陋，不够简洁
+ * 3. 个人认为将 state 包裹在回调中，代码相对于同步取值来说不够简洁
  */
 
 import localStorage from 'store/dist/store.modern'
