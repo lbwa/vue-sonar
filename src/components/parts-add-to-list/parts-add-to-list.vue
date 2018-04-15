@@ -23,7 +23,7 @@
       </div>
 
       <div class="search-result-wrapper" v-show="queryKey">
-        <PartsResult :query="queryKey" :showArtist="false"/>
+        <PartsResult ref="searchList" :query="queryKey" :showArtist="false"/>
       </div>
 
     </div>
@@ -47,7 +47,7 @@ export default {
 
   methods: {
     toggleSwitchIndex (index) {
-      this.switchIndex = (index++) % 2
+      this.switchIndex = index
     },
 
     getQueryKey (query) {
@@ -56,6 +56,13 @@ export default {
 
     showComponent () {
       this.hasShowComponent = true
+      setTimeout(() => {
+        if (this.switchIndex === 0) {
+          // TODO:
+        } else {
+          this.$refs.searchList.refresh()
+        }
+      }, 20)
     },
 
     hideComponent () {
