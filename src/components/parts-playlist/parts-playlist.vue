@@ -76,10 +76,7 @@ export default {
   methods: {
     deleteAllSongs () {
       this.deleteAllSongsFromList()
-
-      if (!this.playlist.length) {
-        this.closePlaylist()
-      }
+      this.closePlaylist()
     },
 
     deleteSong (song, index) {
@@ -92,13 +89,10 @@ export default {
     },
 
     scrollToCurrentSong (current) {
-      const index = this.sequenceList.findIndex(item => {
-        return current.id === item.id
+      const index = this.sequenceList.findIndex((song) => {
+        return song.id === current.id
       })
-
-      this.$nextTick(() => { // 防止第一次点击时，$refs.playlistItem 为 undefined
-        this.$refs.contentScroll.scrollToElement(this.$refs.playlistItem[index], 300)
-      })
+      this.$refs.contentScroll.scrollToElement(this.$refs.playlistItem[index], 300)
     },
 
     getCurrentIcon (item) {
@@ -145,7 +139,7 @@ export default {
 
   watch: {
     currentSong (newSong, oldSong) {
-      if (!this.showPlaylist || newSong.id === oldSong.id) {
+      if (!this.hasShowPlaylist || newSong.id === oldSong.id) {
         return
       }
 
