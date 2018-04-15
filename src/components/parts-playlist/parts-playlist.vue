@@ -13,15 +13,16 @@
           </h1>
         </div>
 
-        <BaseScroll class="list-content" :data="sequenceList">
+        <BaseScroll ref="contentScroll" class="list-content" :data="sequenceList">
           <ul>
             <li
+              ref="playlistItem"
               class="content-item"
               v-for="(song, index) of sequenceList"
               :key="index"
-              @click="selectItem(song, index)"
+              @click="selectSong(song, index)"
             >
-              <i class="current"></i>
+              <i :class="['current', getCurrentIcon(song)]"></i>
               <span class="item-text">{{ song.name }}</span>
               <span class="like-btn">
                 <i class="icon-not-like"></i>
@@ -71,7 +72,24 @@ export default {
   },
 
   methods: {
-    selectItem (song, index) {
+    scrollToCurrentSong (current) {
+      const index = this.sequenceList.findIndex(item => {
+        return current.id === item.id
+      })
+
+      this.$refs.contentScroll.scrollToElement(this.$refs.playlistItem[index], 300)
+    },
+
+    getCurrentIcon (item) {
+      if (this.currentSong.id === item.id) {
+        return 'icon-play'
+      } else {
+        return ''
+      }
+    },
+
+    selectSong (song, index) {
+      // 传入的 Index 即是展示性列表 sequenceList 中的 Index
       if (this.mode === playMode.random) {
         index = this.playlist.findIndex(item => {
           return song.id === item.id
@@ -114,6 +132,11 @@ export default {
 
     showPlaylist () {
       this.hasShowPlaylist = true
+      // 只有在 display 非 none 值之后才是正确的计算元素高度的时机
+      setTimeout(() => { // this.$nextTick
+        this.$refs.contentScroll.refresh()
+        this.scrollToCurrentSong(this.currentSong)
+      }, 20)
     },
 
     closePlaylist () {
@@ -126,6 +149,16 @@ export default {
       setPlaylist: 'SET_PLAYLIST',
       setPlayingState: 'SET_PLAYING_STATE'
     })
+  },
+
+  watch: {
+    currentSong (newSong, oldSong) {
+      if (!this.showPlaylist || newSong.id === oldSong.id) {
+        return
+      }
+
+      this.scrollToCurrentSong(newSong)
+    }
   },
 
   computed: {
