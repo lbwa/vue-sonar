@@ -108,3 +108,35 @@ export const deleteSearchHistory = function ({ commit }, query) {
 export const clearAllHistory = function ({ commit }) {
   commit(types.SET_SEARCH_HISTORY, deleteAllSearchItem())
 }
+
+export const deleteSongFromList = function ({ commit, state }, {song, index}) {
+  // 传入的 Index 即是展示性列表 sequenceList 中的 Index
+  let playlist = [...state.playlist]
+  let sequenceList = [...state.sequenceList]
+  let currentIndex = state.currentIndex
+
+  const indexInPlaylist = findIndex(playlist, song)
+  // const indexInSequenceList = findIndex(sequenceList, song) // 即为 index
+
+  playlist.splice(indexInPlaylist, 1)
+  sequenceList.splice(index, 1)
+
+  if (currentIndex > indexInPlaylist || currentIndex === playlist.length) {
+    currentIndex--
+  }
+
+  commit(types.SET_PLAYLIST, playlist)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+
+  const playingState = playlist.length > 0
+
+  commit(types.SET_PLAYING_STATE, playingState)
+}
+
+export const deleteAllSongsFromList = function ({ commit }) {
+  commit(types.SET_PLAYING_STATE, false)
+  commit(types.SET_PLAYLIST, [])
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_CURRENT_INDEX, -1)
+}

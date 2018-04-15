@@ -6,7 +6,8 @@
       @enter="enter"
       @after-enter="afterEnter"
       @after-leave="afterLeave"
-    ><!-- 待解决 @leave="leave" 与 leave-active leave-to 冲突 -->
+      type="transition"
+    ><!-- FIXME: @leave="leave" 与 leave-active leave-to 冲突 -->
       <div class="normal-player" v-show="fullScreen">
         <div class="background">
           <img
@@ -31,7 +32,7 @@
           @touchend.prevent="middleTouchEnd"
         >
           <div class="middle-album" ref="album">
-            <div class="cd-wrapper" ref="cd">
+            <div class="cd-wrapper" ref="cdWrapper">
               <div :class="['cd', rotateCD]">
                 <img
                   :src="currentSong.image"
@@ -79,7 +80,7 @@
           <!-- 播放控件 -->
           <div class="player-operators">
 
-            <div class="icon icon-left" @click="changeMode">
+            <div class="icon icon-left" @click="togglePlayMode">
               <i :class="iconMode"></i>
             </div>
             <div :class="['icon', 'icon-left', disableBtn]">
@@ -152,7 +153,7 @@ import PartsPlaylist from 'components/parts-playlist/parts-playlist'
 import { mapGetters, mapMutations } from 'vuex'
 import { prefixStyle } from 'common/js/control-dom'
 import { playMode } from 'common/js/config'
-import { shuffle } from 'common/js/util'
+import { playerMixin } from 'common/js/mixin'
 import animations from 'create-keyframe-animation'
 import LyricParser from 'lyric-parser'
 
@@ -160,6 +161,7 @@ const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
 
 export default {
+  mixins: [playerMixin],
   data () {
     return {
       songReady: false, // 用于限制点击行为
@@ -261,33 +263,6 @@ export default {
       }
     },
 
-    changeMode () {
-      const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
-
-      let list = null
-      if (mode === playMode.random) {
-        list = shuffle(this.sequenceList) // 打乱顺序
-      } else {
-        list = this.sequenceList
-      }
-      this.resetCurrentIndex(list)
-      this.setPlaylist(list)
-      /**
-       * 经试验，playlist 的改变不会导致 currentSong 的重新计算（在 watch 中设定一
-       * 个 console ），currentIndex 会导致触发 watcher ，即 currentSong 会重新计
-       * 算。
-       */
-    },
-    // 保证 playlist 改变时不会改变当前播放歌曲
-    resetCurrentIndex (list) {
-      let index = list.findIndex(item => {
-        return item.id === this.currentSong.id
-      }) // 在修改后的 list 中找到当前播放的 index
-
-      this.setCurrentIndex(index)
-    },
-
     endPlay () {
       if (this.mode === playMode.loop) {
         this.loopPlay()
@@ -358,25 +333,28 @@ export default {
         }
       })
       // done 为 enter 钩子的回调函数，执行效果是调用下一阶段钩子，这里是 afterEnter
-      animations.runAnimation(this.$refs.cd, 'move', done)
+      animations.runAnimation(this.$refs.cdWrapper, 'move', done)
     },
 
     afterEnter () {
       animations.unregisterAnimation('move')
-      this.$refs.cd.style.animation = ''
+      this.$refs.cdWrapper.style.animation = ''
     },
 
     leave (el, done) {
+      this.$refs.cdWrapper.style.transition = `all 0.4s`
+
       const { x, y, scale } = this._getPositionAndScale()
+
       // const transform = prefixStyle('transform')
-      this.$refs.cd.style[transform] = `translate3d(${x}, ${y}, 0) scale(${scale})`
-      this.$refs.cd.style.transition = `all 0.4s`
-      this.$refs.cd.addEventListener('transitioned', done)
+      this.$refs.cdWrapper.style[transform] = `translate3d(${x}, ${y}, 0) scale(${scale})`
+      this.$refs.cdWrapper.addEventListener('transitionend', done)
+      done()
     },
 
     afterLeave () {
-      this.$refs.cd.style.transition = ''
-      this.$refs.cd.style[transform] = ''
+      this.$refs.cdWrapper.style.transition = ''
+      this.$refs.cdWrapper.style[transform] = ''
     },
 
     middleTouchStart (evt) {
@@ -458,11 +436,7 @@ export default {
     },
 
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN',
-      setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_PLAY_MODE',
-      setPlaylist: 'SET_PLAYLIST'
+      setFullScreen: 'SET_FULL_SCREEN'
     })
   },
 
@@ -479,7 +453,8 @@ export default {
   watch: {
     // nextTick 防止报错 DOMException: The play() request was interrupted by a new load request (原因：异步请求)
     currentSong (newSong, oldSong) {
-      if (newSong.id === oldSong.id) return // 防止暂停时切模式自动播放问题
+      // 当列表清空时检验 !newSong.id
+      if (!newSong.id || newSong.id === oldSong.id) return // 防止暂停时切模式自动播放问题
 
       if (this.currentLyric) {
         this.currentLyric.stop() // 暂停之前 LyricParser 实例
@@ -512,18 +487,10 @@ export default {
       return this.currentTime / this.currentSong.duration
     },
 
-    iconMode () {
-      return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
-    },
-
     ...mapGetters([
       'fullScreen',
-      'playlist',
-      'currentSong',
       'playing',
-      'currentIndex',
-      'mode',
-      'sequenceList'
+      'currentIndex'
     ])
   },
 
@@ -757,7 +724,6 @@ export default {
     }
     &.normal-enter, &.normal-leave-to {
       opacity: 0;
-      // Chrome 有一定几率出现只有一个类(top / bottom)被正常添加(进入动画)，IOS 正常
       .parts-top {
         transform: translate3d(0, -100px, 0);
       }

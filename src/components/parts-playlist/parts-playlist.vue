@@ -5,8 +5,8 @@
 
         <div class="list-header">
           <h1 class="title">
-            <i :class="['icon', playModeIcon]" @click="togglePlayMode"></i>
-            <span class="text">{{ playMode }}</span>
+            <i :class="['icon', iconMode]" @click="togglePlayMode"></i>
+            <span class="text">{{ playModeText }}</span>
             <span class="clean-playlist" @click="showConfirm">
               <i class="icon-clear"></i>
             </span>
@@ -14,12 +14,13 @@
         </div>
 
         <BaseScroll ref="contentScroll" class="list-content" :data="sequenceList">
-          <ul>
+          <transition-group name="list" tag="ul">
+            <!-- li 的 key 值必须是绑定 song.id，若绑定 index 则动画始终出现在列表末端 -->
             <li
               ref="playlistItem"
               class="content-item"
               v-for="(song, index) of sequenceList"
-              :key="index"
+              :key="song.id"
               @click="selectSong(song, index)"
             >
               <i :class="['current', getCurrentIcon(song)]"></i>
@@ -27,11 +28,11 @@
               <span class="like-btn">
                 <i class="icon-not-like"></i>
               </span>
-              <span class="delete-btn">
+              <span class="delete-btn" @click.stop="deleteSong(song, index)">
                 <i class="icon-close"></i>
               </span>
             </li>
-          </ul>
+          </transition-group>
         </BaseScroll>
 
         <div class="list-operate">
@@ -47,9 +48,9 @@
 
         <BaseConfirm
           ref="confirm"
-          title="是否清空所有搜索历史"
+          title="是否清空播放列表"
           confirmBtnText="清空"
-          @confirmSubmit="cleanPlaylist"
+          @confirmSubmit="deleteAllSongs"
         />
 
       </div>
@@ -60,11 +61,12 @@
 <script>
 import BaseScroll from 'base/base-scroll'
 import BaseConfirm from 'base/base-confirm'
-import { mapGetters, mapMutations } from 'vuex'
-import { shuffle } from 'common/js/util'
+import { mapActions } from 'vuex'
 import { playMode } from 'common/js/config'
+import { playerMixin } from 'common/js/mixin'
 
 export default {
+  mixins: [playerMixin],
   data () {
     return {
       hasShowPlaylist: false
@@ -72,12 +74,31 @@ export default {
   },
 
   methods: {
+    deleteAllSongs () {
+      this.deleteAllSongsFromList()
+
+      if (!this.playlist.length) {
+        this.closePlaylist()
+      }
+    },
+
+    deleteSong (song, index) {
+      // 传入的 Index 即是展示性列表 sequenceList 中的 Index
+      this.deleteSongFromList({song, index})
+
+      if (!this.playlist.length) {
+        this.closePlaylist()
+      }
+    },
+
     scrollToCurrentSong (current) {
       const index = this.sequenceList.findIndex(item => {
         return current.id === item.id
       })
 
-      this.$refs.contentScroll.scrollToElement(this.$refs.playlistItem[index], 300)
+      this.$nextTick(() => { // 防止第一次点击时，$refs.playlistItem 为 undefined
+        this.$refs.contentScroll.scrollToElement(this.$refs.playlistItem[index], 300)
+      })
     },
 
     getCurrentIcon (item) {
@@ -99,35 +120,8 @@ export default {
       this.setPlayingState(true)
     },
 
-    cleanPlaylist () {
-      // TODO:
-    },
-
     showConfirm () {
       this.$refs.confirm.showConfirm()
-    },
-
-    // https://github.com/lbwa/vue-sonar/blob/master/src/components/app-player/app-player.vue#L256-L281
-    togglePlayMode () {
-      const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
-
-      let list = null
-      if (mode === playMode.random) {
-        list = shuffle(this.sequenceList) // 打乱顺序
-      } else {
-        list = this.sequenceList
-      }
-      this.resetCurrentIndex(list)
-      this.setPlaylist(list)
-    },
-
-    resetCurrentIndex (list) {
-      let index = list.findIndex(item => {
-        return item.id === this.currentSong.id
-      }) // 在修改后的 list 中找到当前播放的 index
-
-      this.setCurrentIndex(index)
     },
 
     showPlaylist () {
@@ -143,12 +137,10 @@ export default {
       this.hasShowPlaylist = false
     },
 
-    ...mapMutations({
-      setPlayMode: 'SET_PLAY_MODE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlaylist: 'SET_PLAYLIST',
-      setPlayingState: 'SET_PLAYING_STATE'
-    })
+    ...mapActions([
+      'deleteSongFromList',
+      'deleteAllSongsFromList'
+    ])
   },
 
   watch: {
@@ -162,20 +154,9 @@ export default {
   },
 
   computed: {
-    playModeIcon () {
-      return this.mode === 0 ? 'icon-sequence' : this.mode === 1 ? 'icon-loop' : 'icon-random'
-    },
-
-    playMode () {
-      return this.mode === 0 ? '列表循环' : this.mode === 1 ? '单曲循环' : '随机播放'
-    },
-
-    ...mapGetters([
-      'playlist',
-      'mode',
-      'sequenceList',
-      'currentSong'
-    ])
+    playModeText () {
+      return this.mode === playMode.sequence ? '列表循环' : this.mode === playMode.loop ? '单曲循环' : '随机播放'
+    }
   },
 
   components: {
@@ -247,6 +228,12 @@ export default {
       align-items: center;
       height: 40px;
       overflow: hidden;
+      &.list-enter, &.list-leave-to {
+        height: 0;
+      }
+      &.list-enter-active, &.list-leave-active {
+        transition: all 0.1s linear;
+      }
       .current {
         flex: 0 0 20px;
         width: 20px;

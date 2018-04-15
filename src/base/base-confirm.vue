@@ -1,6 +1,6 @@
 <template>
   <transition name="confirm-fade">
-    <div class="confirm" v-show="showFlag" @click.self="chooseCancel">
+    <div class="confirm" v-show="showFlag" @click.stop.self="chooseCancel">
       <div class="confirm-wrapper">
         <div class="confirm-content">
           <p class="text">{{ title }}</p>
