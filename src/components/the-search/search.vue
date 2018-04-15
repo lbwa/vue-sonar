@@ -40,13 +40,15 @@
     </BaseScroll>
   </div>
 
-  <PartsResult
-    @listScrolling="blurInputBox"
-    @selectQuery="saveSearchItem"
-    ref="resultList"
-    :query="queryKey"
-    v-show="queryKey"
-  />
+  <div class="search-result-wrapper">
+    <PartsResult
+      @listScrolling="blurInputBox"
+      @selectQuery="saveSearchItem"
+      ref="resultList"
+      :query="queryKey"
+      v-show="queryKey"
+    />
+  </div>
 
   <BaseConfirm
     ref="confirm"
@@ -227,6 +229,12 @@ export default {
         }
       }
     }
+  }
+  .search-result-wrapper {
+    position: fixed;
+    top: 178px;
+    bottom: 0;
+    width: 100%;
   }
 }
 </style>

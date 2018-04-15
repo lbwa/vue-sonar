@@ -1,6 +1,6 @@
 <template>
   <BaseScroll
-    class="search-result-wrapper"
+    class="search-result"
     ref="scroll"
     :data="searchResult" :pullUp="pullUp" :beforeScroll="beforeScroll"
     @scrollToEnd="searchMore"
@@ -205,11 +205,7 @@ export default {
 @import '~scss/variables';
 @import '~scss/mixin';
 
-.search-result-wrapper {
-  position: fixed;
-  top: 178px;
-  bottom: 0;
-  width: 100%;
+.search-result {
   overflow: hidden;
   font-size: 0;
   .result-list {

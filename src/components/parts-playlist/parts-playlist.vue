@@ -36,7 +36,7 @@
         </BaseScroll>
 
         <div class="list-operate">
-          <div class="add-song">
+          <div class="add-song"  @click="showAddToList">
             <i class="icon-add"></i>
             <span class="text">添加歌曲到队列</span>
           </div>
@@ -54,6 +54,8 @@
         />
 
       </div>
+
+      <PartsAddToList ref="addToList"/>
     </div>
   </transition>
 </template>
@@ -61,6 +63,7 @@
 <script>
 import BaseScroll from 'base/base-scroll'
 import BaseConfirm from 'base/base-confirm'
+import PartsAddToList from 'components/parts-add-to-list/parts-add-to-list'
 import { mapActions } from 'vuex'
 import { playMode } from 'common/js/config'
 import { playerMixin } from 'common/js/mixin'
@@ -74,6 +77,10 @@ export default {
   },
 
   methods: {
+    showAddToList () {
+      this.$refs.addToList.showComponent()
+    },
+
     deleteAllSongs () {
       this.deleteAllSongsFromList()
       this.closePlaylist()
@@ -155,7 +162,8 @@ export default {
 
   components: {
     BaseScroll,
-    BaseConfirm
+    BaseConfirm,
+    PartsAddToList
   }
 }
 </script>
