@@ -1,10 +1,10 @@
 <template>
   <div class="search-list">
-    <ul>
+    <transition-group name="slide" tag="ul">
       <li
         class="search-item"
-        v-for="(item, index) of searchData"
-        :key="index"
+        v-for="item of searchData"
+        :key="item"
         @click="selectItem(item)"
       >
         <span class="text">{{ item }}</span>
@@ -12,7 +12,7 @@
           <i class="icon-close"></i>
         </div>
       </li>
-    </ul>
+    </transition-group>
   </div>
 </template>
 
@@ -49,6 +49,12 @@ export default {
   height: 40px;
   overflow: hidden;
   color: $color-text-l;
+  &.slide-enter, &.slide-leave-to {
+    height: 0;
+  }
+  &.slide-enter-active, &.slide-leave-active {
+    transition: all .1s;
+  }
   .text {
     flex: 1;
     font-size: $font-size-medium-x;

@@ -7,7 +7,12 @@
   </div>
 
   <div class="shortcut-wrapper" ref="shortcutWrapper" v-show="!queryKey">
-    <BaseScroll class="shortcut" ref="scroll" :data="scrollDependence">
+    <BaseScroll
+      class="shortcut"
+      ref="scroll"
+      :data="scrollDependence"
+      :refreshDelay="refreshScrollDelay"
+    >
       <div class="scroll-wrapper">
         <div class="hot-key">
           <h1 class="title">热门搜索</h1>

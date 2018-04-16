@@ -13,7 +13,12 @@
           </h1>
         </div>
 
-        <BaseScroll ref="contentScroll" class="list-content" :data="sequenceList">
+        <BaseScroll
+          ref="contentScroll"
+          class="list-content"
+          :data="sequenceList"
+          :refreshDelay="refreshScrollDelay"
+        >
           <transition-group name="list" tag="ul">
             <!-- li 的 key 值必须是绑定 song.id，若绑定 index 则动画始终出现在列表末端 -->
             <li
@@ -72,7 +77,8 @@ export default {
   mixins: [playerMixin],
   data () {
     return {
-      hasShowPlaylist: false
+      hasShowPlaylist: false,
+      refreshScrollDelay: 100 // 值大于等于 transition-group 动画的值
     }
   },
 

@@ -33,7 +33,7 @@ function insertItem (arr, value, compare, maxLength) {
     arr.splice(index, 1)
   }
 
-  arr.unshift(value) // 若仓库不存在被查询数据
+  arr.unshift(value) // 将传入的 value 数据置于数组之首
 
   if (maxLength && arr.length > maxLength) {
     arr.pop() // 超过限定长度时，删除最后一项

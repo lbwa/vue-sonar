@@ -187,6 +187,7 @@ export default {
       this.songReady = true
     },
 
+    // audio play 事件定义写入播放历史记录
     audioPlay () {
       this.savePlayedHistory(this.currentSong)
     },

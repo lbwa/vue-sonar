@@ -36,6 +36,11 @@ export default {
     beforeScroll: { // 用于移动端 input 失焦时机的判断，以在滚动时收起键盘
       type: Boolean,
       default: false
+    },
+
+    refreshDelay: {
+      type: Number,
+      default: 20
     }
   },
   methods: {
@@ -91,9 +96,12 @@ export default {
 
   watch: {
     data () { // 自身根据 ajax 数据（props 中的 data 属性）返回刷新滚动组件
-      this.$nextTick(() => {
+      // this.$nextTick(() => {
+      //   this.refresh()
+      // })
+      setTimeout(() => {
         this.refresh()
-      })
+      }, this.refreshDelay)
     }
   },
 

@@ -16,5 +16,3 @@ const state = { // 只保留最基础的数据，由基础数据可计算得到�
 }
 
 export default state
-
-// TODO: 待验证 vuex searchHistory 异步被赋值

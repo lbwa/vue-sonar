@@ -88,7 +88,8 @@ export const playerMixin = {
 export const searchMixin = {
   data () {
     return {
-      queryKey: ''
+      queryKey: '',
+      refreshScrollDelay: 100 // 值大于等于 transition-group 动画的值(源于 search-list 组件)
     }
   },
 

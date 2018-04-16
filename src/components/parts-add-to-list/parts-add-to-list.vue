@@ -18,25 +18,30 @@
 
       <div class="shortcut" v-show="!queryKey">
         <BaseSwitches
-          :switchOptions="switchOptions" :currentSwitchIndex="switchIndex"
+          :switchOptions="switchOptions"
+          :currentSwitchIndex="switchIndex"
           @selectSwitch="toggleSwitchIndex"
         />
 
         <div class="list-wrapper">
+          <!-- 最近播放 -->
           <BaseScroll
             class="scroll-wrapper"
             ref="scrollPlayedList"
             v-if="switchIndex === 0"
+            :data="playedHistory"
           >
             <div class="currentPlay-list">
               <BaseSongsList :songsData="playedHistory" @select="selectedSong"/>
             </div>
           </BaseScroll>
+          <!-- 搜索历史 -->
           <BaseScroll
             class="scroll-wrapper"
             ref="scrollSearchList"
             v-if="switchIndex === 1"
             :data="searchHistory"
+            :refreshDelay="refreshScrollDelay"
           >
           <!-- better-scroll 组件封装，其子元素不能直接是另一个组件，子组件必须有一个包裹，否则无法正确挂载 -->
             <div class="result-wrapper">
@@ -54,10 +59,17 @@
         <PartsResult
           :query="queryKey"
           :showArtist="false"
-          @selectQuery="saveSearchItem"
+          @selectQuery="saveSearch"
           @listScrolling="blurInputBox"
         />
       </div>
+
+      <BaseTopTip ref="topTip" :hideDelay="topTipDelay">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span class="text">一首歌曲已经添加到列表</span>
+        </div>
+      </BaseTopTip>
 
     </div>
   </transition>
@@ -69,6 +81,7 @@ import BaseScroll from 'base/base-scroll'
 import BaseSearchList from 'base/base-search-list'
 import BaseSwitches from 'base/base-switches/base-switches'
 import BaseSongsList from 'base/base-songs-list/base-songs-list'
+import BaseTopTip from 'base/base-top-tip/base-top-tip'
 import PartsResult from 'components/parts-search-result/parts-search-result'
 import { mapGetters, mapActions } from 'vuex'
 import { searchMixin } from 'common/js/mixin'
@@ -81,13 +94,27 @@ export default {
     return {
       hasShowComponent: false,
       switchOptions: [{ name: '最近播放' }, { name: '搜索历史' }],
-      switchIndex: 0
+      switchIndex: 0,
+      topTipDelay: 2000
     }
   },
 
   methods: {
+    showTopTip () {
+      this.$refs.topTip.showTopTip()
+    },
+
     selectedSong (song, index) {
-      this.insertSong(new Song(song))
+      // song 来自 localeStorage ,转换为 Song 的实例，这样才会具有 lyric 方法
+      if (index) {
+        this.insertSong(new Song(song))
+        this.showTopTip()
+      }
+    },
+
+    saveSearch () {
+      this.saveSearchItem()
+      this.showTopTip()
     },
 
     toggleSwitchIndex (index) {
@@ -96,7 +123,7 @@ export default {
 
     showComponent () {
       this.hasShowComponent = true
-      setTimeout(() => {
+      setTimeout(() => { // this.$nextTick 的一种实现
         if (this.switchIndex === 0) {
           this.$refs.scrollPlayedList.refresh()
         } else {
@@ -126,6 +153,7 @@ export default {
     BaseSearchList,
     BaseSwitches,
     BaseSongsList,
+    BaseTopTip,
     PartsResult
   }
 }
@@ -190,6 +218,19 @@ export default {
     top: 124px;
     bottom: 0;
     width: 100%;
+  }
+  .tip-title {
+    text-align: center;
+    padding: 18px 0;
+    .icon-ok {
+      font-size: $font-size-medium;
+      color: $color-theme;
+      margin-right: 4px;
+    }
+    .text {
+      font-size: $font-size-medium;
+      color: $color-text;
+    }
   }
 }
 
