@@ -2,7 +2,7 @@
 <div class="search">
   <div class="search-box-wrapper">
     <BaseSearchBox
-      :placeholder="placeholder" @queryChange="queryChange" ref="searchBox"
+      :placeholder="placeholder" @queryChange="getQueryKey" ref="searchBox"
     />
   </div>
 
@@ -69,28 +69,23 @@ import BaseScroll from 'base/base-scroll'
 import PartsResult from 'components/parts-search-result/parts-search-result'
 import { getHotKey } from 'api/the-search'
 import { ERR_OK } from 'api/config'
-import { mapActions, mapGetters } from 'vuex'
-import { playlistMixin } from 'common/js/mixin'
+import { mapActions } from 'vuex'
+import { playlistMixin, searchMixin } from 'common/js/mixin'
 
 export default {
-  mixins: [playlistMixin],
+  mixins: [playlistMixin, searchMixin],
 
   data () {
     return {
       placeholder: '搜索歌曲、歌手',
-      hotKey: [],
-      queryKey: ''
+      hotKey: []
     }
   },
 
   computed: {
     scrollDependence () { // 用于 scroll 的刷新，当两个依赖变化时，重新计算
       return [...this.hotKey, ...this.searchHistory]
-    },
-
-    ...mapGetters([
-      'searchHistory'
-    ])
+    }
   },
 
   methods: {
@@ -107,29 +102,6 @@ export default {
       this.$refs.confirm.showConfirm()
     },
 
-    saveSearchItem () {
-      this.saveSearchHistory(this.queryKey)
-    },
-
-    blurInputBox () {
-      this.$refs.searchBox.blurInputBar()
-    },
-
-    queryChange (query) {
-      this.queryKey = query
-    },
-
-    selectQueryRecord (item) {
-      /**
-       * 调用子组件方法传值的优势在于:
-       * 1. 不用设置不必要的 props 和 watch
-       * 2. 代码量更少
-       * 适用于不需要监听的数据传递，注重传递这一行为
-       */
-
-      this.$refs.searchBox.setQuery(item)
-    },
-
     _getHotKey () {
       getHotKey().then(res => {
         if (res.code === ERR_OK) {
@@ -139,8 +111,6 @@ export default {
     },
 
     ...mapActions([
-      'saveSearchHistory',
-      'deleteSearchHistory', // 自动传入载荷
       'clearAllHistory'
     ])
   },

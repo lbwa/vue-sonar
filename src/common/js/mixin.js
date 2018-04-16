@@ -2,7 +2,7 @@
  * mixin 中方法均会被各个组件中的同名属性方法覆盖
  */
 
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
 
@@ -81,6 +81,50 @@ export const playerMixin = {
       'mode',
       'sequenceList',
       'currentSong'
+    ])
+  }
+}
+
+export const searchMixin = {
+  data () {
+    return {
+      queryKey: ''
+    }
+  },
+
+  methods: {
+    selectQueryRecord (item) {
+      /**
+       * 调用子组件方法传值的优势在于:
+       * 1. 不用设置不必要的 props 和 watch
+       * 2. 代码量更少
+       * 适用于不需要监听的数据传递，注重传递这一行为
+       */
+
+      this.$refs.searchBox.setQuery(item)
+    },
+
+    getQueryKey (query) {
+      this.queryKey = query
+    },
+
+    blurInputBox () {
+      this.$refs.searchBox.blurInputBar()
+    },
+
+    saveSearchItem () {
+      this.saveSearchHistory(this.queryKey)
+    },
+
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory' // 自动传入载荷
+    ])
+  },
+
+  computed: {
+    ...mapGetters([
+      'searchHistory'
     ])
   }
 }

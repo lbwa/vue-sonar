@@ -10,7 +10,10 @@
       </div>
 
       <div class="search-box-wrapper">
-        <BaseSearchBox placeholder="搜索歌曲、歌手" @queryChange="getQueryKey"/>
+        <BaseSearchBox
+          ref="searchBox" placeholder="搜索歌曲"
+          @queryChange="getQueryKey"
+        />
       </div>
 
       <div class="shortcut" v-show="!queryKey">
@@ -33,8 +36,8 @@
             <div class="result-wrapper">
               <BaseSearchList
                 :searchData="searchHistory"
-                @selectItem="saveSearchItem"
-                @deleteItem="deleteSearchItem"
+                @selectItem="selectQueryRecord"
+                @deleteItem="deleteSearchHistory"
               />
             </div>
           </BaseScroll>
@@ -46,6 +49,7 @@
           :query="queryKey"
           :showArtist="false"
           @selectQuery="saveSearchItem"
+          @listScrolling="blurInputBox"
         />
       </div>
 
@@ -59,33 +63,22 @@ import BaseScroll from 'base/base-scroll'
 import BaseSearchList from 'base/base-search-list'
 import BaseSwitches from 'base/base-switches/base-switches'
 import PartsResult from 'components/parts-search-result/parts-search-result'
-import { mapGetters, mapActions } from 'vuex'
+import { searchMixin } from 'common/js/mixin'
 
 export default {
+  mixins: [searchMixin],
+
   data () {
     return {
       hasShowComponent: false,
       switchOptions: [{ name: '最近播放' }, { name: '搜索历史' }],
-      switchIndex: 0,
-      queryKey: ''
+      switchIndex: 0
     }
   },
 
   methods: {
-    deleteSearchItem (item) {
-      this.deleteSearchHistory(item)
-    },
-
-    saveSearchItem () {
-      this.saveSearchHistory(this.queryKey)
-    },
-
     toggleSwitchIndex (index) {
       this.switchIndex = index
-    },
-
-    getQueryKey (query) {
-      this.queryKey = query
     },
 
     showComponent () {
@@ -101,18 +94,7 @@ export default {
 
     hideComponent () {
       this.hasShowComponent = false
-    },
-
-    ...mapActions([
-      'saveSearchHistory',
-      'deleteSearchHistory' // 自动传入载荷
-    ])
-  },
-
-  computed: {
-    ...mapGetters([
-      'searchHistory'
-    ])
+    }
   },
 
   components: {
@@ -135,7 +117,7 @@ export default {
   bottom: 0;
   width: 100%;
   background-color: $color-background;
-  z-index: 1000; // TODO: 隐藏 playlist ?
+  z-index: 200;
   &.slide-enter, &.slide-leave-to {
     transform: translateX(100%)
   }

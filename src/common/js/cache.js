@@ -12,7 +12,14 @@
 import localStorage from 'store/dist/store.modern'
 
 const SEARCH_KEY = '__search__'
-const SEARCH_MAX_LENGTH = 20
+const HAS_PLAY_KEY = '__has_play__'
+
+const SEARCH_MAX_LENGTH = 15
+const HAS_PLAY_MAX_LENGTH = 200
+
+/**
+ *  Save search record to localStorage
+ */
 
 function insertItem (arr, value, compare, maxLength) {
   const index = arr.findIndex(compare)
@@ -98,3 +105,22 @@ export function deleteAllSearchItem () {
 
 //   return searches
 // }
+
+/**
+ *  Save played song record to localStorage
+ */
+
+export function savePlayedSong (query) {
+  let played = localStorage.get(HAS_PLAY_KEY) || []
+
+  insertItem(played, query, item => {
+    return item === query
+  }, HAS_PLAY_MAX_LENGTH)
+
+  localStorage.set(HAS_PLAY_KEY, played)
+  return played
+}
+
+export function loadPlayedSong () {
+  return localStorage.get(HAS_PLAY_KEY) || []
+}
