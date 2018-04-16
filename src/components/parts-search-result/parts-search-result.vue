@@ -206,6 +206,7 @@ export default {
 @import '~scss/mixin';
 
 .search-result {
+  height: 100%;
   overflow: hidden;
   font-size: 0;
   .result-list {

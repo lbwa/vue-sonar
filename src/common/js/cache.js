@@ -12,7 +12,7 @@
 import localStorage from 'store/dist/store.modern'
 
 const SEARCH_KEY = '__search__'
-const SEARCH_MAX_LENGTH = 15
+const SEARCH_MAX_LENGTH = 20
 
 function insertItem (arr, value, compare, maxLength) {
   const index = arr.findIndex(compare)

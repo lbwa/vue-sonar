@@ -19,11 +19,34 @@
           @selectSwitch="toggleSwitchIndex"
         />
 
-        <div class="list-wrapper"></div>
+        <div class="list-wrapper">
+          <BaseScroll class="scroll-wrapper" v-if="switchIndex === 0">
+            <div class="currentPlay-list"></div>
+          </BaseScroll>
+          <BaseScroll
+            class="scroll-wrapper"
+            ref="scrollSearchList"
+            v-if="switchIndex === 1"
+            :data="searchHistory"
+          >
+          <!-- better-scroll 组件封装，其子元素不能直接是另一个组件，子组件必须有一个包裹，否则无法正确挂载 -->
+            <div class="result-wrapper">
+              <BaseSearchList
+                :searchData="searchHistory"
+                @selectItem="saveSearchItem"
+                @deleteItem="deleteSearchItem"
+              />
+            </div>
+          </BaseScroll>
+        </div>
       </div>
 
       <div class="search-result-wrapper" v-show="queryKey">
-        <PartsResult ref="searchList" :query="queryKey" :showArtist="false"/>
+        <PartsResult
+          :query="queryKey"
+          :showArtist="false"
+          @selectQuery="saveSearchItem"
+        />
       </div>
 
     </div>
@@ -32,8 +55,11 @@
 
 <script>
 import BaseSearchBox from 'base/base-search-box'
+import BaseScroll from 'base/base-scroll'
+import BaseSearchList from 'base/base-search-list'
 import BaseSwitches from 'base/base-switches/base-switches'
 import PartsResult from 'components/parts-search-result/parts-search-result'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -46,6 +72,14 @@ export default {
   },
 
   methods: {
+    deleteSearchItem (item) {
+      this.deleteSearchHistory(item)
+    },
+
+    saveSearchItem () {
+      this.saveSearchHistory(this.queryKey)
+    },
+
     toggleSwitchIndex (index) {
       this.switchIndex = index
     },
@@ -60,18 +94,31 @@ export default {
         if (this.switchIndex === 0) {
           // TODO:
         } else {
-          this.$refs.searchList.refresh()
+          this.$refs.scrollSearchList.refresh()
         }
       }, 20)
     },
 
     hideComponent () {
       this.hasShowComponent = false
-    }
+    },
+
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory' // 自动传入载荷
+    ])
+  },
+
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
   },
 
   components: {
     BaseSearchBox,
+    BaseScroll,
+    BaseSearchList,
     BaseSwitches,
     PartsResult
   }
@@ -80,6 +127,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~scss/variables';
+@import '~scss/mixin';
 
 .add-to-list {
   position: fixed;
@@ -112,6 +160,19 @@ export default {
         padding: 12px;
         font-size: 20px;
         color: $color-theme;
+      }
+    }
+  }
+  .list-wrapper {
+    position: absolute;
+    top: 165px;
+    bottom: 0;
+    width: 100%;
+    .scroll-wrapper {
+      height: 100%;
+      overflow: hidden;
+      .search-list {
+        padding: 20px 30px;
       }
     }
   }

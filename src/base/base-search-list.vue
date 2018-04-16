@@ -48,6 +48,7 @@ export default {
   align-items: center;
   height: 40px;
   overflow: hidden;
+  color: $color-text-l;
   .text {
     flex: 1;
     font-size: $font-size-medium-x;

@@ -40,13 +40,12 @@
     </BaseScroll>
   </div>
 
-  <div class="search-result-wrapper">
+  <div class="search-result-wrapper" ref="resultWrapper" v-show="queryKey">
     <PartsResult
       @listScrolling="blurInputBox"
       @selectQuery="saveSearchItem"
       ref="resultList"
       :query="queryKey"
-      v-show="queryKey"
     />
   </div>
 
@@ -99,7 +98,7 @@ export default {
       const bottom = this.playlist.length > 0 ? '60px' : ''
 
       this.$refs.shortcutWrapper.style.bottom = bottom // 历史记录页
-      this.$refs.resultList.$el.style.bottom = bottom // 搜索结果页
+      this.$refs.resultWrapper.style.bottom = bottom // 搜索结果页
       this.$refs.scroll.refresh()
       this.$refs.resultList.refreshScroll()
     },
