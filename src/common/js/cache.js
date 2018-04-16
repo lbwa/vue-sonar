@@ -12,15 +12,16 @@
 import localStorage from 'store/dist/store.modern'
 
 const SEARCH_KEY = '__search__'
-const HAS_PLAY_KEY = '__has_play__'
+const HAS_PLAYED_KEY = '__has_played__'
 
 const SEARCH_MAX_LENGTH = 15
-const HAS_PLAY_MAX_LENGTH = 200
+const HAS_PLAYED_MAX_LENGTH = 200
 
 /**
  *  Save search record to localStorage
  */
 
+// 去重、插入数据
 function insertItem (arr, value, compare, maxLength) {
   const index = arr.findIndex(compare)
 
@@ -110,17 +111,18 @@ export function deleteAllSearchItem () {
  *  Save played song record to localStorage
  */
 
-export function savePlayedSong (query) {
-  let played = localStorage.get(HAS_PLAY_KEY) || []
+export function savePlayedSongs (query) {
+  let played = localStorage.get(HAS_PLAYED_KEY) || []
 
   insertItem(played, query, item => {
-    return item === query
-  }, HAS_PLAY_MAX_LENGTH)
+    return item.id === query.id
+  }, HAS_PLAYED_MAX_LENGTH)
 
-  localStorage.set(HAS_PLAY_KEY, played)
+  localStorage.set(HAS_PLAYED_KEY, played)
+
   return played
 }
 
-export function loadPlayedSong () {
-  return localStorage.get(HAS_PLAY_KEY) || []
+export function loadPlayedSongs () {
+  return localStorage.get(HAS_PLAYED_KEY) || []
 }

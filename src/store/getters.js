@@ -21,3 +21,5 @@ export const recommendItem = state => state.recommendItem
 export const selectedTopList = state => state.selectedTopList
 
 export const searchHistory = state => state.searchHistory
+
+export const playedHistory = state => state.playedHistory

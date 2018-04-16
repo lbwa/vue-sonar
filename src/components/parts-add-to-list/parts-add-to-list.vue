@@ -23,8 +23,14 @@
         />
 
         <div class="list-wrapper">
-          <BaseScroll class="scroll-wrapper" v-if="switchIndex === 0">
-            <div class="currentPlay-list"></div>
+          <BaseScroll
+            class="scroll-wrapper"
+            ref="scrollPlayedList"
+            v-if="switchIndex === 0"
+          >
+            <div class="currentPlay-list">
+              <BaseSongsList :songsData="playedHistory" @select="selectedSong"/>
+            </div>
           </BaseScroll>
           <BaseScroll
             class="scroll-wrapper"
@@ -62,8 +68,11 @@ import BaseSearchBox from 'base/base-search-box'
 import BaseScroll from 'base/base-scroll'
 import BaseSearchList from 'base/base-search-list'
 import BaseSwitches from 'base/base-switches/base-switches'
+import BaseSongsList from 'base/base-songs-list/base-songs-list'
 import PartsResult from 'components/parts-search-result/parts-search-result'
+import { mapGetters, mapActions } from 'vuex'
 import { searchMixin } from 'common/js/mixin'
+import Song from 'common/js/normalize-song'
 
 export default {
   mixins: [searchMixin],
@@ -77,6 +86,10 @@ export default {
   },
 
   methods: {
+    selectedSong (song, index) {
+      this.insertSong(new Song(song))
+    },
+
     toggleSwitchIndex (index) {
       this.switchIndex = index
     },
@@ -85,7 +98,7 @@ export default {
       this.hasShowComponent = true
       setTimeout(() => {
         if (this.switchIndex === 0) {
-          // TODO:
+          this.$refs.scrollPlayedList.refresh()
         } else {
           this.$refs.scrollSearchList.refresh()
         }
@@ -94,7 +107,17 @@ export default {
 
     hideComponent () {
       this.hasShowComponent = false
-    }
+    },
+
+    ...mapActions([
+      'insertSong'
+    ])
+  },
+
+  computed: {
+    ...mapGetters([
+      'playedHistory'
+    ])
   },
 
   components: {
@@ -102,6 +125,7 @@ export default {
     BaseScroll,
     BaseSearchList,
     BaseSwitches,
+    BaseSongsList,
     PartsResult
   }
 }

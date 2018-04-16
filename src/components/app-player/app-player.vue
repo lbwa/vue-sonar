@@ -140,7 +140,11 @@
     <audio
       ref="audio"
       :src="currentSong.url"
-      @canplay="readyPlay" @error="errorPlay" @timeupdate="timeUpdate" @ended="endPlay"
+      @canplay="readyPlay"
+      @play="audioPlay"
+      @error="errorPlay"
+      @timeupdate="timeUpdate"
+      @ended="endPlay"
     ></audio>
   </div>
 </template>
@@ -150,7 +154,7 @@ import BaseScroll from 'base/base-scroll'
 import BaseProgressBar from 'base/base-progress-bar'
 import BaseProgressCircle from 'base/base-progress-circle'
 import PartsPlaylist from 'components/parts-playlist/parts-playlist'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { prefixStyle } from 'common/js/control-dom'
 import { playMode } from 'common/js/config'
 import { playerMixin } from 'common/js/mixin'
@@ -181,6 +185,10 @@ export default {
      */
     readyPlay () {
       this.songReady = true
+    },
+
+    audioPlay () {
+      this.savePlayedHistory(this.currentSong)
     },
 
     errorPlay () {
@@ -437,7 +445,11 @@ export default {
 
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN'
-    })
+    }),
+
+    ...mapActions([
+      'savePlayedHistory'
+    ])
   },
 
   filters: {

@@ -3,7 +3,7 @@
 import * as types from './mutation-types'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
-import { saveSearchItem, deleteSearchItem, deleteAllSearchItem } from 'common/js/cache'
+import { saveSearchItem, deleteSearchItem, deleteAllSearchItem, savePlayedSongs } from 'common/js/cache'
 
 function findIndex (list, song) {
   return list.findIndex(item => {
@@ -40,7 +40,7 @@ export const randomPlay = ({ commit }, { list }) => {
   commit(types.SET_PLAYING_STATE, true)
 }
 
-// 搜索页点击歌曲插入播放列表中
+// 将单曲插入当前播放列表中
 
 export const insertSong = ({ commit, state }, song) => {
   /**
@@ -97,6 +97,8 @@ export const insertSong = ({ commit, state }, song) => {
   commit(types.SET_PLAYING_STATE, true)
 }
 
+// 搜索记录
+
 export const saveSearchHistory = function ({ commit }, query) {
   commit(types.SET_SEARCH_HISTORY, saveSearchItem(query))
 }
@@ -108,6 +110,8 @@ export const deleteSearchHistory = function ({ commit }, query) {
 export const clearAllHistory = function ({ commit }) {
   commit(types.SET_SEARCH_HISTORY, deleteAllSearchItem())
 }
+
+// 播放列表
 
 export const deleteSongFromList = function ({ commit, state }, {song, index}) {
   // 传入的 Index 即是展示性列表 sequenceList 中的 Index
@@ -139,4 +143,10 @@ export const deleteAllSongsFromList = function ({ commit }) {
   commit(types.SET_PLAYLIST, [])
   commit(types.SET_SEQUENCE_LIST, [])
   commit(types.SET_CURRENT_INDEX, -1)
+}
+
+// 最近播放列表
+
+export const savePlayedHistory = function ({ commit }, song) {
+  commit(types.SET_PLAYED_HISTORY, savePlayedSongs(song))
 }
