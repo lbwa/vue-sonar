@@ -4,12 +4,18 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-import fastclick from 'fastclick'
+import fastClick from 'fastclick'
 import VueLazyLoad from 'vue-lazyload'
 
 import 'scss/index.scss'
 
-fastclick.attach(document.body)
+// vConsole is only for dev
+/* eslint-disable no-unused-vars */
+// import VConsole from 'vconsole' // 修改了默认 console，主要用于实现手机端 console
+
+// const vConsole = process.env.NODE_ENV === 'development' ? new VConsole() : null
+
+fastClick.attach(document.body)
 
 Vue.use(VueLazyLoad, {
   loading: require('@/common/image/default/default.png')

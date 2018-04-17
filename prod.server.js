@@ -1,3 +1,4 @@
+// 只适用于 production 环境
 // 使用方法：根目录下 node prod.server.js
 
 // webpack-dev-serve 使用 express 作为中间件，故可直接引入
