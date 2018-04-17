@@ -98,7 +98,7 @@
               <i class="icon-next" @click="nextSong"></i>
             </div>
             <div class="icon icon-right">
-              <i class="icon icon-not-like"></i>
+              <i :class="['icon', hasFavorite]" @click="toggleFavorite"></i>
             </div>
           </div>
         </div>
@@ -174,7 +174,8 @@ export default {
       currentLyric: null,
       currentLineNum: 0,
       currentShow: 'cd',
-      playingLyric: ''
+      playingLyric: '',
+      hasFavoriteSong: false
     }
   },
 
@@ -212,6 +213,16 @@ export default {
 
     openFullScreen () {
       this.setFullScreen(true)
+    },
+
+    toggleFavorite () {
+      this.hasFavoriteSong = !this.hasFavoriteSong
+
+      if (this.hasFavoriteSong) {
+        this.saveMyFavoriteSong(this.currentSong)
+      } else {
+        this.deleteMyFavoriteSong(this.currentSong)
+      }
     },
 
     showPlaylist () {
@@ -449,7 +460,9 @@ export default {
     }),
 
     ...mapActions([
-      'savePlayedHistory'
+      'savePlayedHistory',
+      'saveMyFavoriteSong',
+      'deleteMyFavoriteSong'
     ])
   },
 
@@ -488,6 +501,10 @@ export default {
   },
 
   computed: {
+    hasFavorite () {
+      return this.hasFavoriteSong ? 'icon-like' : 'icon-not-like'
+    },
+
     rotateCD () {
       return this.playing ? 'play' : 'play pause'
     },
@@ -723,6 +740,9 @@ export default {
         }
         .icon-right {
           text-align: left;
+        }
+        .icon-like {
+          color: $color-sub-theme;
         }
         i {
           font-size: 30px;

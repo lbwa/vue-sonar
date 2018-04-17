@@ -13,6 +13,7 @@ import localStorage from 'store/dist/store.modern'
 
 const SEARCH_KEY = '__search__'
 const HAS_PLAYED_KEY = '__has_played__'
+const FAVORITE_SONGS_KEY = '__favorite_songs__'
 
 const SEARCH_MAX_LENGTH = 15
 const HAS_PLAYED_MAX_LENGTH = 200
@@ -125,4 +126,36 @@ export function savePlayedSongs (query) {
 
 export function loadPlayedSongs () {
   return localStorage.get(HAS_PLAYED_KEY) || []
+}
+
+/**
+ * Save my favorite songs to localStorage
+ */
+
+export function saveFavoriteSongs (song) {
+  let favorite = localStorage.get(FAVORITE_SONGS_KEY) || []
+
+  insertItem(favorite, song, item => {
+    return item.id === song.id
+  })
+
+  localStorage.set(FAVORITE_SONGS_KEY, favorite)
+
+  return favorite
+}
+
+export function deleteFavoriteSong (song) {
+  let favorite = localStorage.get(FAVORITE_SONGS_KEY)
+
+  deleteItem(favorite, item => {
+    return item.id === song.id
+  })
+
+  localStorage.set(FAVORITE_SONGS_KEY, favorite)
+
+  return favorite
+}
+
+export function loadFavoriteSongs () {
+  return localStorage.get(FAVORITE_SONGS_KEY) || []
 }

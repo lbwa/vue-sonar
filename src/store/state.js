@@ -1,5 +1,5 @@
 import { playMode } from 'common/js/config'
-import { loadSearchData, loadPlayedSongs } from 'common/js/cache'
+import { loadSearchData, loadPlayedSongs, loadFavoriteSongs } from 'common/js/cache'
 
 const state = { // 只保留最基础的数据，由基础数据可计算得到的数据放置到 getters 中
   artist: {},
@@ -12,7 +12,8 @@ const state = { // 只保留最基础的数据，由基础数据可计算得到�
   recommendItem: [], // 用户点击的推荐歌单项
   selectedTopList: [], // 用户点击的排行榜
   searchHistory: loadSearchData(),
-  playedHistory: loadPlayedSongs()
+  playedHistory: loadPlayedSongs(),
+  myFavoriteSongs: loadFavoriteSongs()
 }
 
 export default state

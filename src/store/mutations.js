@@ -43,6 +43,10 @@ const mutations = {
 
   [types.SET_PLAYED_HISTORY] (state, playedHistory) {
     state.playedHistory = playedHistory
+  },
+
+  [types.SET_MY_FAVORITE_SONGS] (state, myFavoriteSongs) {
+    state.myFavoriteSongs = myFavoriteSongs
   }
 }
 

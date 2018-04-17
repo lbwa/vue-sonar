@@ -2,11 +2,20 @@
 <div class="app-header">
   <div class="icon"></div>
   <div class="text">Sonar Music</div>
+  <div class="user-center" @click="showUserCenter">
+    <i class="icon-mine"></i>
+  </div>
 </div>
 </template>
 
 <script>
-export default {}
+export default {
+  methods: {
+    showUserCenter () {
+      this.$router.push({ path: '/user' })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -32,6 +41,17 @@ export default {}
     vertical-align: top;
     line-height: 44px;
     font-size: $font-size-large;
+  }
+  .user-center {
+    position: absolute;
+    top: 0;
+    right: 0;
+    .icon-mine {
+      display: inline-block;
+      padding: 12px;
+      font-size: 20px;
+      color: $color-theme;
+    }
   }
 }
 

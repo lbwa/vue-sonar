@@ -7,6 +7,7 @@ import ArtistItem from 'components/parts-artist-item/parts-artist-item'
 import Ranking from 'components/the-ranking/ranking'
 import RankingItem from 'components/parts-ranking-item/parts-ranking-item'
 import Search from 'components/the-search/search'
+import UserCenter from 'components/the-user-center/the-user-center'
 
 Vue.use(Router)
 
@@ -55,6 +56,10 @@ export default new Router({
           component: ArtistItem
         }
       ]
+    },
+    {
+      path: '/user',
+      component: UserCenter
     }
   ]
 })
