@@ -1,6 +1,11 @@
+// 使用方法：根目录下 node prod.server.js
+
+// webpack-dev-serve 使用 express 作为中间件，故可直接引入
+
 const express = require('express')
 const config = require('./config/index')
 const axios = require('axios')
+const chalk = require('chalk')
 
 const app = express()
 
@@ -102,9 +107,9 @@ const port = process.env.PORT || config.build.port
 
 module.exports = app.listen(port , function (err) {
   if (err) {
-    console.log(err)
+    console.log(chalk.red(err))
     return
   }
 
-  console.log('Listening at http://localhost:' + port + '\n')
+  console.log(chalk.yellow(`Listening at http://localhost: ${port} \n`))
 })
