@@ -140,7 +140,6 @@
     <audio
       ref="audio"
       :src="currentSong.url"
-      @canplay="readyPlay"
       @play="audioPlay"
       @error="errorPlay"
       @timeupdate="timeUpdate"
@@ -180,15 +179,13 @@ export default {
 
   methods: {
     /**
-     * 监听 canplay 事件是为防止 DOMException: The play() request was
+     * 监听 play 事件是为防止 DOMException: The play() request was
      * interrupted by a new load request (原因：play()方法执行应在资源加载完成之后)
      */
-    readyPlay () {
-      this.songReady = true
-    },
 
     // audio play 事件定义写入播放历史记录
     audioPlay () {
+      this.songReady = true
       this.savePlayedHistory(this.currentSong)
     },
 
@@ -230,6 +227,8 @@ export default {
 
       if (this.playlist.length === 1) {
         this.loopPlay()
+        // 只有一首歌在播放列表中时，不设置 songReady，因为是设置 currentTime = 0 的原理来循环歌曲的，所以不会触发 play 事件
+        return
       } else {
         // 因为只能是 mutations 修改 state ，故不能写 this.currentIndex--
         const index = this.currentIndex === 0 ? this.playlist.length - 1 : this.currentIndex - 1
@@ -245,6 +244,8 @@ export default {
 
       if (this.playlist.length === 1) {
         this.loopPlay()
+        // 只有一首歌在播放列表中时，不设置 songReady，因为是设置 currentTime = 0 的原理来循环歌曲的，所以不会触发 play 事件
+        return
       } else {
         const index = this.currentIndex === this.playlist.length - 1 ? 0 : this.currentIndex + 1
         this.setCurrentIndex(index)
@@ -293,6 +294,8 @@ export default {
     getSongLyric () {
       // getLyric 详见 common/js/normalize-song
       this.currentSong.getLyric().then(lyric => {
+        if (this.currentSong.lyric !== lyric) return
+
         this.currentLyric = new LyricParser(lyric, this.handleLyric)
         if (this.playing) {
           this.currentLyric.play() // play() 是 LyricParser 的实例方法
@@ -472,8 +475,13 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.stop() // 暂停之前 LyricParser 实例
         console.info('%c Lyric timer has been clean', 'color: dodgerblue')
+        this.currentTime = 0
+        this.playingLyric = ''
+        this.currentLineNum = 0
       }
-      setTimeout(() => {
+
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
         this.$refs.audio.play()
         this.getSongLyric()
       }, 1000)
@@ -708,7 +716,7 @@ export default {
         .icon {
           flex: 1;
           &.disable {
-            color: $color-theme-d;
+            color: rgba(255, 205, 49, 0.5); // $color-theme-d;
           }
         }
         .icon-left {

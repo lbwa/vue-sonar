@@ -44,6 +44,9 @@ module.exports = {
   },
 
   build: {
+    // Only for run static resource 'docs'
+    port: 9000,
+
     // Template for index.html
     index: path.resolve(__dirname, '../dist/index.html'),
 
