@@ -65,15 +65,19 @@ export default {
 
   methods: {
     addAllSongsToList () {
-      if (this.switchIndex === 0) {
+      let list = []
 
-      } else {
-        const list = this.playedHistory.map(song => {
+      if (this.switchIndex === 0) {
+        list = this.myFavoriteSongs.map(song => {
           return new Song(song)
         })
-
-        this.randomPlay({ list })
+      } else {
+        list = this.playedHistory.map(song => {
+          return new Song(song)
+        })
       }
+
+      this.randomPlay({ list })
     },
 
     addSongToList (song, index) {

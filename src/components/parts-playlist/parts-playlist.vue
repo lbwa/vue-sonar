@@ -30,8 +30,8 @@
             >
               <i :class="['current', getCurrentIcon(song)]"></i>
               <span class="item-text">{{ song.name }}</span>
-              <span class="like-btn">
-                <i class="icon-not-like"></i>
+              <span class="like-btn" @click.stop="toggleIsFavorite(song)">
+                <i :class="getFavoriteIcon(song)"></i>
               </span>
               <span class="delete-btn" @click.stop="deleteSong(song, index)">
                 <i class="icon-close"></i>
@@ -262,6 +262,9 @@ export default {
       }
       .like-btn {
         margin-right: 15px;
+        .icon-like {
+          color: $color-sub-theme;
+        }
       }
     }
   }
