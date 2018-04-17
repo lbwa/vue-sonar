@@ -19,8 +19,13 @@
         <span class="btn-text">随机播放全部</span>
       </div>
 
-      <div class="list-wrapper">
-        <BaseScroll class="scroll-wrapper" v-if="switchIndex === 0">
+      <div class="list-wrapper" ref="listWrapper">
+        <BaseScroll
+          class="scroll-wrapper"
+          ref="favoriteList"
+          v-if="switchIndex === 0"
+          :data="myFavoriteSongs"
+        >
           <div class="favorite-list-wrapper">
             <BaseSongsList
               :songsData="myFavoriteSongs"
@@ -29,7 +34,12 @@
           </div>
         </BaseScroll>
 
-        <BaseScroll class="scroll-wrapper" v-if="switchIndex === 1">
+        <BaseScroll
+          class="scroll-wrapper"
+          ref="playedList"
+          v-if="switchIndex === 1"
+          :data="playedHistory"
+        >
           <div class="has-played-wrapper">
             <BaseSongsList
               :songsData="playedHistory"
@@ -40,7 +50,7 @@
       </div>
 
       <div class="no-result-wrapper" v-if="showNoResult">
-        <BaseNoResult title="这里空空如也 ..."/>
+        <BaseNoResult :title="noResultTitle"/>
       </div>
 
     </div>
@@ -53,9 +63,12 @@ import BaseScroll from 'base/base-scroll'
 import BaseSongsList from 'base/base-songs-list/base-songs-list'
 import BaseNoResult from 'base/base-no-result/base-no-result'
 import { mapGetters, mapActions } from 'vuex'
+import { playlistMixin } from 'common/js/mixin'
 import Song from 'common/js/normalize-song'
 
 export default {
+  mixins: [playlistMixin],
+
   data () {
     return {
       switchOptions: [{ name: '我喜欢的' }, { name: '最近播放' }],
@@ -64,18 +77,23 @@ export default {
   },
 
   methods: {
-    addAllSongsToList () {
-      let list = []
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
 
-      if (this.switchIndex === 0) {
-        list = this.myFavoriteSongs.map(song => {
-          return new Song(song)
-        })
-      } else {
-        list = this.playedHistory.map(song => {
-          return new Song(song)
-        })
-      }
+      this.$refs.listWrapper.style.bottom = bottom
+
+      this.$refs.favoriteList && this.$refs.favoriteList.refresh()
+      this.$refs.playedList && this.$refs.playedList.refresh()
+    },
+
+    addAllSongsToList () {
+      let list = this.switchIndex === 0 ? this.myFavoriteSongs : this.playedHistory
+
+      if (!list.length) return
+
+      list = list.map(song => {
+        return new Song(song)
+      })
 
       this.randomPlay({ list })
     },
@@ -100,6 +118,10 @@ export default {
   },
 
   computed: {
+    noResultTitle () {
+      return this.switchIndex === 0 ? '这里空空如也... 快收藏自己喜欢的歌曲啦' : '你最近还没有播放歌曲'
+    },
+
     showNoResult () {
       return (this.switchIndex === 0 && !this.myFavoriteSongs.length) || (this.switchIndex === 1 && !this.playedHistory.length)
     },

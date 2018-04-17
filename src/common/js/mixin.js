@@ -28,20 +28,26 @@ export const playlistMixin = {
   },
 
   methods: {
+    // 验证 playlist.length === 0 来判断是否自适应（添加 bottom: 60px）
     handlePlaylist () {
       throw new Error('Component must implement handlePlaylist method')
     }
+
+    // 组件内实现如下：
+
+    // handlePlaylist (playlist) {
+    //   const bottom = playlist.length > 0 ? '60px' : ''
+
+    //   this.$refs.scrollWrapper.style.bottom = bottom
+    //   // ... refresh component scroll
+    // }
   }
 }
 
 export const playerMixin = {
   methods: {
     toggleIsFavorite (song) {
-      if (this.isFavoriteSong(song)) {
-        this.deleteMyFavoriteSong(song)
-      } else {
-        this.saveMyFavoriteSong(song)
-      }
+      this.isFavoriteSong(song) ? this.deleteMyFavoriteSong(song) : this.saveMyFavoriteSong(song)
     },
 
     getFavoriteIcon (song) {

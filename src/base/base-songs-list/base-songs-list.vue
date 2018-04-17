@@ -12,7 +12,7 @@
         </div>
         <div class="item-content">
           <h2 class="item-title">{{ item.name }}</h2>
-          <p class="item-description">{{ item.artist }} · {{ item.album }}</p>
+          <p class="item-description">{{ getDescription(item) }}</p>
         </div>
       </li>
     </ul>
@@ -50,6 +50,10 @@ export default {
 
     getRankText (index) {
       return index > 2 ? index + 1 : ''
+    },
+
+    getDescription (item) {
+      return `${item.artist} · ${item.album}`
     }
   }
 }

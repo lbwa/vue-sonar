@@ -17,6 +17,7 @@ const FAVORITE_SONGS_KEY = '__favorite_songs__'
 
 const SEARCH_MAX_LENGTH = 15
 const HAS_PLAYED_MAX_LENGTH = 200
+const FAVORITE_SONGS_MAX_LENGTH = 200
 
 /**
  *  Save search record to localStorage
@@ -137,7 +138,7 @@ export function saveFavoriteSongs (song) {
 
   insertItem(favorite, song, item => {
     return item.id === song.id
-  })
+  }, FAVORITE_SONGS_MAX_LENGTH)
 
   localStorage.set(FAVORITE_SONGS_KEY, favorite)
 

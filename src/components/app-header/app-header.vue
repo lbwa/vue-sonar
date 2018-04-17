@@ -2,20 +2,14 @@
 <div class="app-header">
   <div class="icon"></div>
   <div class="text">Sonar Music</div>
-  <div class="user-center" @click="showUserCenter">
+  <router-link to="/user" tag="div" class="user-center">
     <i class="icon-mine"></i>
-  </div>
+  </router-link>
 </div>
 </template>
 
 <script>
-export default {
-  methods: {
-    showUserCenter () {
-      this.$router.push({ path: '/user' })
-    }
-  }
-}
+export default {}
 </script>
 
 <style lang="scss" scoped>
